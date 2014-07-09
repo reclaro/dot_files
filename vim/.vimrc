@@ -1,0 +1,127 @@
+" All system-wide defaults are set in $VIMRUNTIME/debian.vim (usually just
+" /usr/share/vim/vimcurrent/debian.vim) and sourced by the call to :runtime
+" you can find below.  If you wish to change any of those settings, you should
+" do it in this file (/etc/vim/vimrc), since debian.vim will be overwritten
+" everytime an upgrade of the vim packages is performed.  It is recommended to
+" make changes after sourcing debian.vim since it alters the value of the
+" 'compatible' option.
+
+" This line should not be removed as it ensures that various options are
+" properly set to work with the Vim-related packages available in Debian.
+runtime! debian.vim
+" Uncomment the next line to make Vim more Vi-compatible
+" NOTE: debian.vim sets 'nocompatible'.  Setting 'compatible' changes numerous
+" options, so any other options should be set AFTER setting 'compatible'.
+"set compatible
+
+" Vim5 and later versions support syntax highlighting. Uncommenting the next
+" line enables syntax highlighting by default.
+if has("syntax")
+  syntax on
+endif
+
+" If using a dark background within the editing area and syntax highlighting
+" turn on this option as well
+"set background=dark
+"colorscheme solarized
+
+" Uncomment the following to have Vim jump to the last position when
+" reopening a file
+"if has("autocmd")
+"  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+"endif
+
+" Uncomment the following to have Vim load indentation rules and plugins
+" according to the detected filetype.
+"if has("autocmd")
+"  filetype plugin indent on
+"endif
+" filetype plugin on
+"NeoBundle Scripts-----------------------------
+if has('vim_starting')
+       set runtimepath+=~/.vim/bundle/neobundle.vim/
+endif
+
+call neobundle#rc(expand('~/.vim/bundle/'))
+" Let NeoBundle manage NeoBundle
+" Required:
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+NeoBundle 'bling/vim-airline'            " better status line
+NeoBundle 'altercation/vim-colors-solarized.git' " solarized color scheme
+NeoBundle 'kien/ctrlp.vim'               " fuzzy file finder
+NeoBundle 'nvie/vim-flake8.git'           " flake8 vim integratio F7 to run
+NeoBundle 'Lokaltog/vim-easymotion'       " movemnt plugin
+NeoBundle 'tpope/vim-fugitive'           " git integration
+NeoBundle 'takac/vim-commandcaps'        " correct mistyped commands like :Wq
+NeoBundle 'kien/rainbow_parentheses.vim' " make my brackets pretty colors
+
+"omnicompletion
+set ofu=syntaxcomplete#Complete
+autocmd FileType python set omnifunc=pythoncomplete#Complete
+"Pydiction autocomplete using tab
+let g:pydiction_location = '/home/andrea/misc/vimplugins/pydiction-1.2/complete-dict'
+highlight Pmenu ctermbg=Black ctermfg=Yellow gui=bold"
+highlight PmenuSel ctermbg=Black ctermfg=Red
+
+"Highlights text when going over 79 chars
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+match OverLength /\%79v.\+/
+"Highlights trailing white spaces
+highlight ExtraWhitespace ctermbg=red ctermfg=white guibg=#592929
+match ExtraWhitespace /\s\+$/
+
+"general pep8 settings
+set expandtab
+set textwidth=79
+set tabstop=8
+set softtabstop=4
+set shiftwidth=4
+set autoindent
+" The following are commented out as they cause vim to behave a lot
+" differently from regular Vi. They are highly recommended though.
+set showcmd		" Show (partial) command in status line.
+set showmatch		" Show matching brackets.
+set ignorecase		" Do case insensitive matching
+set smartcase		" Do smart case matching
+set incsearch		" Incremental search
+"set autowrite		" Automatically save before commands like :next and :make
+"set hidden             " Hide buffers when they are abandoned
+set mouse=a		" Enable mouse usage (all modes)
+set number
+" Enable highlight for all search results
+set hlsearch
+"ROZ disable highlight search when we are in insert mode
+autocmd InsertEnter * :set nohlsearch
+"ROZ enable highlight search when we leave insert mode
+autocmd InsertLeave * :set hlsearch
+" Source a global configuration file if available
+"if filereadable("/etc/vim/vimrc.local")
+"  source /etc/vim/vimrc.local
+"endif
+"Installing the pathogen plugin manager
+" execute pathogen#infect()
+syntax on
+filetype plugin indent on
+
+set ls=2
+let airline_theme="luna"
+"Set colours and fonts
+if has('gui_running')
+  set background=dark
+  color solarized
+  let airline_theme="solarized"
+endif
+" Airline conf
+let g:airline_theme=airline_theme
+let g:airline_left_sep = ''
+let g:airline_right_sep = ''
+
+" EasyMotiona conf
+let g:EasyMotion_leader_key = '<Space>'
+
+" Rainbow Parentheses
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces

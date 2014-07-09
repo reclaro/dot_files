@@ -1,0 +1,5 @@
+# Note to get rid of a line just Ctrl-C
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+#"\e[C": forward-char #left
+#"\e[D": backward-char #rigth
