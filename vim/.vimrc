@@ -42,7 +42,7 @@ if has('vim_starting')
        set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
-call neobundle#rc(expand('~/.vim/bundle/'))
+call neobundle#begin(expand('~/.vim/bundle/'))
 " Let NeoBundle manage NeoBundle
 " Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
@@ -56,6 +56,7 @@ NeoBundle 'tpope/vim-fugitive'           " git integration
 NeoBundle 'takac/vim-commandcaps'        " correct mistyped commands like :Wq
 NeoBundle 'kien/rainbow_parentheses.vim' " make my brackets pretty colors
 
+call neobundle#end()
 "omnicompletion
 set ofu=syntaxcomplete#Complete
 autocmd FileType python set omnifunc=pythoncomplete#Complete
