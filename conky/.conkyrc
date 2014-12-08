@@ -1,0 +1,64 @@
+out_to_x no
+own_window no
+out_to_console yes
+background no
+max_text_width 0
+update_interval 3.0
+total_run_times 0
+short_units yes
+if_up_strictness address
+#use_spacer left
+override_utf8_locale no
+# set to 1 to disable averaging
+cpu_avg_samples 4
+border_inner_margin 0
+border_outer_margin 0
+draw_shades yes
+default_shade_color white
+cpu_avg_samples 10
+override_utf8_locale no
+minimum_size 1366 1
+short_units yes
+pad_percents 2
+top_name_width 2
+
+#Vedili a questo link http://dotshare.it/dots/455/
+
+#font belliossimo
+use_xft yes
+#xftfont HanelGotD:size=8
+#xftalpha 0.5
+#override_utf8_locale yes
+#font DejaVu Sans Mono for Powerline
+#font
+xftfont FreeMonoBold:size=3
+#xftfont Nokia Pure:size=5
+
+
+TEXT
+[
+{"full_text":"Machine:","color":"\#767676","separator":false,"separator_block_width":3},
+{"full_text":"$nodename","color":"\#d3d3d3","separator":false,"separator_block_width":3},
+{"full_text":"»","color":"\#888888","separator":false,"separator_block_width":3},
+{"full_text":"Uptime:","color":"\#fd971f","separator":false,"separator_block_width":3},
+{"full_text":"$uptime_short","color":"\#d3d3d3","separator":false,"separator_block_width":3},
+{"full_text":"»","color":"\#888888","separator":false,"separator_block_width":3},
+{"full_text":"Kernel:","color":"\#ff669d","separator":false,"separator_block_width":3},
+{"full_text":"$kernel","color":"\#d3d3d3","separator":false,"separator_block_width":3},
+{"full_text":"»","color":"\#888888","separator":false,"separator_block_width":3},
+{"full_text":"Cpu:","color":"\#9e6ffe","separator":false,"separator_block_width":3},
+{"full_text":"$cpu %","color":"\#d3d3d3","separator":false,"separator_block_width":3},
+{"full_text":"»","color":"\#888888","separator":false,"separator_block_width":3},
+{"full_text":"Ram:","color":"\#00CBEE","separator":false,"separator_block_width":3},
+#{"full_text":"$mem / $memmax","color":"\#d3d3d3","separator":false,"separator_block_width":3},
+{"full_text":"$memperc %","color":"\#d3d3d3","separator":false,"separator_block_width":3},
+{"full_text":"»","color":"\#888888","separator":false,"separator_block_width":3},
+{"full_text":"Disk:","color":"\#beed5f","separator":false,"separator_block_width":3},
+{"full_text":"${fs_used} / ${fs_size}","color":"\#d3d3d3","separator":false,"separator_block_width":3},
+{"full_text":"»","color":"\#888888","separator":false,"separator_block_width":3},
+{"full_text":"eth0:","color":"\#ffff00","separator":false,"separator_block_width":3},
+{"full_text":"${upspeed eth0} up ${downspeed eth0} down","color":"\#d3d3d3","separator":false,"separator_block_width":3},
+{"full_text":"»","color":"\#888888","separator":false,"separator_block_width":3},
+#{"full_text": "♪: ${exec ~/.i3/volumelevel.sh}", "color":"\#cccccc","separator":false},
+{"full_text":"${time %a %b %d %Y %H:%M}","color":"\#F21212"}
+],

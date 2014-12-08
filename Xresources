@@ -1,0 +1,95 @@
+# 1 ".Xresources-roz"
+# 1 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 1 "<command-line>" 2
+# 1 ".Xresources-roz"
+URxvt.fading: 40
+URxvt.urgentOnBell: false
+URxvt.visualBell: false
+URxvt.loginShell: true
+URxvt.saveLines: 8192
+URxvt.lineSpace: 0
+!URxvt.letterSpace:-10
+! remove black border
+*borderWidth: 0
+URxvt*cursorBlink: true
+URxvt.cursorColor: #657b83
+URxvt.cursorUnderline: false
+! Scrollbar
+URxvt.scrollStyle: rxvt
+URxvt.scrollBar: false
+! Perl extensions
+URxvt.perl-ext-common: default,matcher
+URxvt.url-launcher: /usr/bin/firefox
+URxvt.matcher.button: 1
+! Fonts
+!*faceName: DejaVuSansMonoforPowerline:style=Book
+!URxvt*faceName: DejaVu Sans Mono for Powerline
+!URxvt*faceName: Droid Sans Mono for Powerline
+!URxvt*faceName: Source Code Pro for Powerline
+!URxvt*faceName: Ubuntu Mono derivative Powerline
+!URxvt*faceName: DejaVu Sans Mono for Powerline
+!URxvt*faceName: inconsolata for powerline-medium-r-normal--0-0-0-0-p-0-iso8859-9
+!URxvt*faceName: Ubuntu Mono derivative Powerline:style=Bold
+!URxvt*faceName: Literation Mono Powerline
+
+URxvt.allow_bold: true
+!URxvt.font: xft:Source Code Pro for Powerline:size=11
+!URxvt.font: xft:Inconsolata for Powerline:style=dz
+URxvt.font: xft:Droid Sans Mono for Powerline:size=10
+Xft.antialias: 1
+Xft.autohint: 0
+Xft.dpi: 96
+Xft.hinting: 1
+Xft.hintstyle: hintfull
+Xft.lcdfilter: lcddefault
+Xft.rgba: rgb
+
+*locale: true
+*metaSendsEscape: true
+!==========================================================================
+! Solarized color theme - dark
+!==========================================================================
+! Solarized color scheme for the X Window System
+!
+! http:
+! Common
+# 67 ".Xresources-roz"
+! Dark
+# 76 ".Xresources-roz"
+! Light
+! #define #002b36 #fdf6e3
+! #define #073642 #eee8d5
+! #define #586e75 #93a1a1
+! #define #657b83 #839496
+! #define #839496 #657b83
+! #define #93a1a1 #586e75
+! #define #eee8d5 #073642
+! #define #fdf6e3 #002b36
+! To only apply colors to your terminal, for example, prefix
+! the color assignment statement with its name. Example:
+!
+! URxvt*background: #002b36
+*background: #002b36
+*foreground: #839496
+*fading: 40
+*fadeColor: #002b36
+*cursorColor: #93a1a1
+*pointerColorBackground: #586e75
+*pointerColorForeground: #93a1a1
+*color0: #073642
+*color1: #dc322f
+*color2: #859900
+*color3: #b58900
+*color4: #268bd2
+*color5: #d33682
+*color6: #2aa198
+*color7: #eee8d5
+*color9: #cb4b16
+*color8: #002b36
+*color10: #586e75
+*color11: #657b83
+*color12: #839496
+*color13: #6c71c4
+*color14: #93a1a1
+*color15: #fdf6e3
