@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "ROZ settings layout"
+setxkbmap -layout gb,it -option 'ctrl:nocaps' -option 'grp:ctrl_alt_toggle'
