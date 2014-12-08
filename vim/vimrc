@@ -112,6 +112,8 @@ if has('gui_running')
   set background=dark
   color solarized
   let airline_theme="solarized"
+  "set guifont=Liberation\ Mono\ for\ Powerline\ 10
+  set guifont=Inconsolata-dz\ for\ Powerline\ Medium\ 10
 endif
 " Airline conf
 let g:airline_theme=airline_theme
