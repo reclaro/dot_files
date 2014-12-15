@@ -55,6 +55,7 @@ NeoBundle 'Lokaltog/vim-easymotion'       " movemnt plugin
 NeoBundle 'tpope/vim-fugitive'           " git integration
 NeoBundle 'takac/vim-commandcaps'        " correct mistyped commands like :Wq
 NeoBundle 'kien/rainbow_parentheses.vim' " make my brackets pretty colors
+NeoBundle 'tpope/vim-commentary'
 
 call neobundle#end()
 "omnicompletion
@@ -111,14 +112,17 @@ let airline_theme="luna"
 if has('gui_running')
   set background=dark
   color solarized
-  let airline_theme="solarized"
+"  let airline_theme="solarized"
+  let airline_theme="laederon"
   "set guifont=Liberation\ Mono\ for\ Powerline\ 10
   set guifont=Inconsolata-dz\ for\ Powerline\ Medium\ 10
+  set guioptions=aegiTL
 endif
 " Airline conf
 let g:airline_theme=airline_theme
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
+let g:airline_powerline_fonts=1
+" let g:airline_left_sep = ''
+" let g:airline_right_sep = ''
 
 " EasyMotiona conf
 let g:EasyMotion_leader_key = '<Space>'
