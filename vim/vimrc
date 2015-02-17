@@ -75,11 +75,11 @@ match ExtraWhitespace /\s\+$/
 
 "general pep8 settings
 set expandtab
-set textwidth=79
 set tabstop=8
 set softtabstop=4
 set shiftwidth=4
 set autoindent
+set scrolloff=5
 " The following are commented out as they cause vim to behave a lot
 " differently from regular Vi. They are highly recommended though.
 set showcmd		" Show (partial) command in status line.
@@ -132,3 +132,5 @@ au VimEnter * RainbowParenthesesToggle
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
+
+au FileType gitcommit set spell
