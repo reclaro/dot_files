@@ -88,27 +88,27 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 # switch to workspace
-bindsym $mod+1 workspace 1: mail
-bindsym $mod+2 workspace 2: web
-bindsym $mod+3 workspace 3: develop
-bindsym $mod+4 workspace 4: irc
-bindsym $mod+5 workspace 5
-bindsym $mod+6 workspace 6
-bindsym $mod+7 workspace 7
-bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9
+bindsym $mod+1 workspace 1: misc
+bindsym $mod+2 workspace 2: irc
+bindsym $mod+3 workspace 3: nova
+bindsym $mod+4 workspace 4: helion
+bindsym $mod+5 workspace 5: tripleo
+bindsym $mod+6 workspace 6: review
+bindsym $mod+7 workspace 7: web
+bindsym $mod+8 workspace 8: TLS
+bindsym $mod+9 workspace 9: jira
 bindsym $mod+0 workspace 10
 
 # move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace 1: mail
-bindsym $mod+Shift+2 move container to workspace 2: web
-bindsym $mod+Shift+3 move container to workspace 3: develop
-bindsym $mod+Shift+4 move container to workspace 4: irc
-bindsym $mod+Shift+5 move container to workspace 5
-bindsym $mod+Shift+6 move container to workspace 6
-bindsym $mod+Shift+7 move container to workspace 7
-bindsym $mod+Shift+8 move container to workspace 8
-bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+1 move container to workspace 1: misc
+bindsym $mod+Shift+2 move container to workspace 2: irc
+bindsym $mod+Shift+3 move container to workspace 3: nova
+bindsym $mod+Shift+4 move container to workspace 4: helion
+bindsym $mod+Shift+5 move container to workspace 5: tripleo
+bindsym $mod+Shift+6 move container to workspace 6: review
+bindsym $mod+Shift+7 move container to workspace 7: web
+bindsym $mod+Shift+8 move container to workspace 8: TLS
+bindsym $mod+Shift+9 move container to workspace 9: jira
 bindsym $mod+Shift+0 move container to workspace 10
 
 # switch between the current and the previously focused one
@@ -123,6 +123,16 @@ bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 #bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+Shift+e exec "i3-msg exit"
+
+# lock the workstation
+bindsym $mod+o exec "i3lock -c 586e75"
+# lock workstation using gnome-screensaver-command
+#bindsym $mod+o exec "gnome-screensaver-command --lock"
+
+# run firefox
+bindsym $mod+i exec "firefox"
+
+
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -154,8 +164,7 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
         status_command i3status
-#        status_command /home/andrea/src/i3blocks/i3blocks -c /home/andrea/.i3blocks.conf
-#        status_command /home/reclaro/.i3/conky-i3bar
+        status_command /home/andrea/.i3/conky-i3bar
         position top
         font xft:Monospace Bold 9
 }
@@ -172,6 +181,7 @@ bindsym $mod+minus scratchpad show
 
 
 # Setting colors: colorclass border background text indicator
-client.focused #ee9a00 #2aa198 #ffffff black
+# client.focused #ee9a00 #2aa198 #ffffff black
+client.focused #ee9a00 #cb4b16 #ffffff black
 client.unfocused #ffffff #000000 #ffffff red
 client.focused_inactive #ffffff #000000 #ffffff #ffffff
