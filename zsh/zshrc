@@ -89,5 +89,16 @@ source "$HOME/.rvm/scripts/rvm"
 # Python virtualenvwrapper
 source /usr/local/bin/virtualenvwrapper.sh
 
-#add my key to avoid to insert the password everytime
-#ssh-add ~/.ssh/id_rsa &>/dev/null
+#let keychain to mangage my key
+eval `keychain --quiet --eval id_rsa`
+#
+# setting the right keyboard layout
+setxkbmap gb
+
+# setting grep color
+export GREP_COLOR='1;37;41'
+
+# bind arrows key for moving between words
+# to check the key codes just run cat
+bindkey "^[Od" backward-word
+bindkey "^[Oc" forward-word
