@@ -1,4 +1,6 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -15,6 +17,8 @@
  '(custom-safe-themes
    (quote
     ("d9046dcd38624dbe0eb84605e77d165e24fdfca3a40c3b13f504728bab0bf99d" "72ac74b21322d3b51235f3b709c43c0721012e493ea844a358c7cd4d57857f1f" "62522dbc0af504719afd8948581d010885dc9202b2aefde18441e4ddc72f6f63" default)))
+ ;; disable startup screen
+ '(inhibit-startup-screen t)
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -26,6 +30,9 @@
 (set-background-color "#151718")
 (set-cursor-color "#E6DB74")
 (set-default 'cursor-type 'box)
+;; enable powerline
+(require 'powerline)
+(powerline-default-theme)
 ;; disable toolbar
 ;;(tool-bar-mode -1)
 ;; disable scrollbar
@@ -36,5 +43,33 @@
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq scroll-margin 1) ;; trigger the scrolling when I am on the last line
-
-
+;; showing matches parenteses, for details http://ergoemacs.org/emacs/emacs_highlight_parenthesis.html
+(show-paren-mode 1)
+(setq show-paren-style 'parenthesis);; highliht all the content (setq show-paren-style 'expression)
+;; enable IDO InteractivelyDoThings
+(require 'ido-vertical-mode)
+(ido-mode 1)
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+(setq ido-vertical-show-count t)
+(setq ido-use-faces t)
+(set-face-attribute 'ido-vertical-first-match-face nil
+                    :background nil
+                    :foreground "orange")
+(set-face-attribute 'ido-vertical-only-match-face nil
+                    :background nil
+                    :foreground nil)
+(set-face-attribute 'ido-vertical-match-face nil
+                    :foreground nil)
+(ido-vertical-mode 1)
+;; install SMEX: Smex is a M-x enhancement for Emacs. https://github.com/nonsequitur/smex
+(setq smex-history-length 15)
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;; This is your old M-x.
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+;;Expanding region hitting the bound char
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+;;If enabled when a region is selected a new char delete the region
+(delete-selection-mode 1)
