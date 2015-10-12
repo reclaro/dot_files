@@ -30,7 +30,7 @@
 ;; disable scrollbar
 (scroll-bar-mode -1)
 ;; disable auto-save
-(setq auto-save-default nil) 
+(setq auto-save-default nil)
 ;;enable spell check
 (flyspell-mode 1)
 ;; scroll one line at a time (less "jumpy" than defaults)
@@ -44,7 +44,9 @@
 (setq show-paren-style 'parenthesis);; highliht all the content (setq show-paren-style 'expression)
 ;; enable IDO InteractivelyDoThings
 ;; (require 'ido-vertical-mode)
+(require 'ido)
 (ido-mode 1)
+;; need it if you get TooBig error  (setq ido-max-directory-size 100000)
 
 ;;Expanding region hitting the bound char
 (require 'expand-region)
@@ -79,3 +81,35 @@
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 ;; rebinding find-file C-x C-f with ffap (find file at point)
 (ffap-bindings)
+;; highlight tabs, spaces and empty line (at the beginning and end of file)
+(setq
+   whitespace-style '(face trailing tabs empty))
+(global-whitespace-mode 1)
+;; do not write tab
+(setq-default indent-tabs-mode nil)
+
+(global-hi-lock-mode 1)
+;; enable visible mark for pointer and mark
+(setq visible-mark-max 2)
+;; put this before (require 'visible-mark)
+(defface visible-mark-active
+  '((((type tty) (class mono)))
+    (t (:background "magenta"))) "")
+(setq visible-mark-faces '(visible-mark-face1 visible-mark-face2))
+
+(require 'visible-mark)
+(global-visible-mark-mode 1)
+
+;; Highlight text that extend beyond a certain column, the default is 80
+(global-column-enforce-mode t)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(cua-mode nil nil (cua-base))
+ '(global-hi-lock-mode t)
+ '(package-selected-packages
+   (quote
+    (yafolding column-enforce-mode visible-mark ag yaml-mode whitespace-cleanup-mode transpose-frame smex seti-theme powerline magit linum-relative jedi ido-vertical-mode hlinum helm expand-region color-theme-solarized))))
