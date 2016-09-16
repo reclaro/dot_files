@@ -31,10 +31,16 @@
 
 ;;(when (fboundp 'windmove-default-keybindings)
 ;;    (windmove-default-keybindings))
+(global-set-key (kbd "s-<right>") 'windmove-right)
+(global-set-key (kbd "s-<left>") 'windmove-left)
+(global-set-key (kbd "s-<up>") 'windmove-up)
+(global-set-key (kbd "s-<down>") 'windmove-down)
 
 ;;(auto-complete-mode 1)
 (show-paren-mode 1)
 
+;;eldoc mode shows function arglist or variable docstring in minibuffer
+(eldoc-mode 1)
 
 (add-hook 'clojure-mode-hook 'paredit-mode)
 ;;(add-hook 'clojurescript-mode-hook 'show-paren-mode)
@@ -87,3 +93,32 @@
    kept-new-versions 3
    kept-old-versions 2
    version-control t)       ; use versioned backups
+
+(require 'highlight-symbol)
+(global-set-key [(control f5)] 'highlight-symbol)
+(global-set-key [f5] 'highlight-symbol-next)
+(global-set-key [(shift f5)] 'highlight-symbol-prev)
+(global-set-key [(meta f5)] 'highlight-symbol-query-replace)
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(linum ((t (:foreground "orange1" :weight light :height 0.9))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "dark cyan"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "dark magenta"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "maroon1"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "tomato1"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "orange1"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "gray57"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "yellow1"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "green1"))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "OrangeRed2")))))
