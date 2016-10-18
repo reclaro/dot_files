@@ -10,13 +10,17 @@
 (load-theme 'seti t)
 
 ;; Set emacs background colour this should be the default bk color for seti theme
-;; (set-background-color "#151718")
+;;(set-background-color "#151718")
 
 (set-cursor-color "#E6DB74")
 (set-default 'cursor-type 'box)
 
 ;; disable startup screen
 (setq inhibit-startup-message t)
+
+;; binding home and end to begging and end of line
+(global-set-key [home] 'move-beginning-of-line)
+(global-set-key [end] 'move-end-of-line)
 
 ;; enable powerline
 (require 'powerline)
@@ -26,8 +30,14 @@
 ;; disable scrollbar
 (scroll-bar-mode -1)
 
+;;hopefully temporary: enable giude key
+(setq guide-key/guide-key-sequence 't)
+(guide-key-mode 1)
+
+
 ;; enable automatic auto-revert
 (global-auto-revert-mode 1)
+
 
 ;;(when (fboundp 'windmove-default-keybindings)
 ;;    (windmove-default-keybindings))
@@ -36,23 +46,26 @@
 (global-set-key (kbd "s-<up>") 'windmove-up)
 (global-set-key (kbd "s-<down>") 'windmove-down)
 
-;;(auto-complete-mode 1)
-(show-paren-mode 1)
+;; unset the list-buffers binding.
+(global-unset-key (kbd "C-x C-b"))
 
-;;eldoc mode shows function arglist or variable docstring in minibuffer
-(eldoc-mode 1)
+ (show-paren-mode 1)
 
 (add-hook 'clojure-mode-hook 'paredit-mode)
+(add-hook 'clojure-mode-hook 'company-mode)
+(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'clojurescript-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'clojurescript-mode-hook 'company-mode)
 ;;(add-hook 'clojurescript-mode-hook 'show-paren-mode)
-;;(add-hook 'clojurescript-mode-hook 'auto-complete-mode)
 
 ;; disable auto-save
 (setq auto-save-default nil)
 
 ;; scroll one line at a time (less "jumpy" than defaults)
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-progressive-speed 't) ;; don't accelerate scrolling
 (setq scroll-margin 1) ;; trigger the scrolling when I am on the last line
+
 ;; show line number
 (global-linum-mode 1)
 
@@ -94,11 +107,24 @@
    kept-old-versions 2
    version-control t)       ; use versioned backups
 
+;; enable rainbow
+(require 'rainbow-delimiters)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
+;; easy way to highligt symbol under the curso and go throught the occurences
 (require 'highlight-symbol)
-(global-set-key [(control f5)] 'highlight-symbol)
-(global-set-key [f5] 'highlight-symbol-next)
+(global-set-key [f5] 'highlight-symbol)
+(global-set-key [(control f5)] 'highlight-symbol-next)
 (global-set-key [(shift f5)] 'highlight-symbol-prev)
 (global-set-key [(meta f5)] 'highlight-symbol-query-replace)
+
+
+;;using the Figwheel REPL connected in emacs
+(require 'cider)
+(setq cider-cljs-lein-repl
+      "(do (require 'figwheel-sidecar.repl-api)
+           (figwheel-sidecar.repl-api/start-figwheel!)
+           (figwheel-sidecar.repl-api/cljs-repl))")
 
 
 (custom-set-variables
