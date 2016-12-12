@@ -7,12 +7,14 @@
 (package-initialize) ;; You might already have this line
 
 ;;(load-theme 'monokai t) ;;very good but too strong contrast
-(load-theme 'seti t)
+;;(load-theme 'seti t)
+;;(load-theme 'spolsky t) ;;inspired by sublime default theme, too strong after a while I get annoyed
+(load-theme 'solarized-dark t)
 
 ;; Set emacs background colour this should be the default bk color for seti theme
 ;;(set-background-color "#151718")
 
-(set-cursor-color "#E6DB74")
+;;(set-cursor-color "#E6DB74")
 (set-default 'cursor-type 'box)
 
 ;; disable startup screen
@@ -22,9 +24,19 @@
 (global-set-key [home] 'move-beginning-of-line)
 (global-set-key [end] 'move-end-of-line)
 
+;;;;;;;;;;; Mode line themes and packages
 ;; enable powerline
-(require 'powerline)
-(powerline-default-theme)
+;;(require 'powerline)
+;;(powerline-default-theme)
+;;(setq sml/theme ')
+;;(sml/setup)
+;;(require 'spaceline-config)
+;;(spaceline-spacemacs-theme)
+;;(spaceline-emacs-theme)
+
+
+
+
 ;; disable toolbar
 (tool-bar-mode -1)
 ;; disable scrollbar
@@ -34,10 +46,15 @@
 (setq guide-key/guide-key-sequence 't)
 (guide-key-mode 1)
 
-
 ;; enable automatic auto-revert
 (global-auto-revert-mode 1)
 
+
+(require 'ace-jump-mode)
+(define-key global-map (kbd "M-0") 'ace-jump-word-mode)
+; this is for not input the head char for word move, this can case more key press
+;(setq ace-jump-word-mode-use-query-char nil)
+(global-set-key (kbd "M-p") 'ace-window)
 
 ;;(when (fboundp 'windmove-default-keybindings)
 ;;    (windmove-default-keybindings))
@@ -49,17 +66,20 @@
 ;; unset the list-buffers binding.
 (global-unset-key (kbd "C-x C-b"))
 
- (show-paren-mode 1)
+(show-paren-mode 1)
+(set-face-foreground 'show-paren-match "white") ;;showing the matching paren in the specific color
+(set-face-attribute  'show-paren-match-face nil :weight 'extra-bold) ;;you can specify :height 130
 
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojure-mode-hook 'company-mode)
 (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'clojurescript-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'clojurescript-mode-hook 'company-mode)
-;;(add-hook 'clojurescript-mode-hook 'show-paren-mode)
 
 ;; disable auto-save
 (setq auto-save-default nil)
+
+
 
 ;; scroll one line at a time (less "jumpy" than defaults)
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
@@ -132,12 +152,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(highlight-symbol-colors
+   (quote
+    ("VioletRed1" "red1" "dark blue" "green3" "dark cyan" "purple4" "forest green")))
+ '(highlight-symbol-foreground-color "gray100"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 110 :width normal :foundry "nil" :family "Menlo"))))
  '(linum ((t (:foreground "orange1" :weight light :height 0.9))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark cyan"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "dark magenta"))))
