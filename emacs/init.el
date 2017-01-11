@@ -35,8 +35,6 @@
 ;;(spaceline-emacs-theme)
 
 
-
-
 ;; disable toolbar
 (tool-bar-mode -1)
 ;; disable scrollbar
@@ -73,8 +71,10 @@
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojure-mode-hook 'company-mode)
 (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'clojure-mode-hook 'whitespace-cleanup-mode)
 (add-hook 'clojurescript-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'clojurescript-mode-hook 'company-mode)
+(add-hook 'clojurescript-mode-hook 'whitespace-cleanup-mode)
 
 ;; disable auto-save
 (setq auto-save-default nil)
@@ -146,6 +146,9 @@
            (figwheel-sidecar.repl-api/start-figwheel!)
            (figwheel-sidecar.repl-api/cljs-repl))")
 
+(tabbar-mode 't)
+;;python ide
+(elpy-enable)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -155,7 +158,12 @@
  '(highlight-symbol-colors
    (quote
     ("VioletRed1" "red1" "dark blue" "green3" "dark cyan" "purple4" "forest green")))
- '(highlight-symbol-foreground-color "gray100"))
+ '(highlight-symbol-foreground-color "gray100")
+ '(tabbar-background-color "#0A2933")
+ '(tabbar-mode t nil (tabbar))
+ '(tabbar-mwheel-mode t nil (tabbar))
+ '(tabbar-separator (quote (" ⚡ " nil)))
+ '(tabbar-use-images nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -171,4 +179,10 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "gray57"))))
  '(rainbow-delimiters-depth-7-face ((t (:foreground "yellow1"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "green1"))))
- '(rainbow-delimiters-depth-9-face ((t (:foreground "OrangeRed2")))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "OrangeRed2"))))
+ '(tabbar-button ((t (:inherit tabbar-default))))
+ '(tabbar-default ((t (:inherit variable-pitch :foreground "gray50" :height 0.9))))
+ '(tabbar-highlight ((t (:underline t))))
+ '(tabbar-selected ((t (:inherit tabbar-default :foreground "orange1"))))
+ '(tabbar-separator ((t (:inherit tabbar-default))))
+ '(tabbar-unselected ((t (:inherit tabbar-default)))))
