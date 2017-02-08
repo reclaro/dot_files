@@ -6,6 +6,11 @@
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
 
+;; load exec-path-from-shell for set the correct ENV path in MAC OS
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
+
 ;;(load-theme 'monokai t) ;;very good but too strong contrast
 ;;(load-theme 'seti t)
 ;;(load-theme 'spolsky t) ;;inspired by sublime default theme, too strong after a while I get annoyed
@@ -68,6 +73,8 @@
 (set-face-foreground 'show-paren-match "white") ;;showing the matching paren in the specific color
 (set-face-attribute  'show-paren-match-face nil :weight 'extra-bold) ;;you can specify :height 130
 
+;; Hooks for clojure and clojure-script
+
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojure-mode-hook 'company-mode)
 (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
@@ -76,6 +83,31 @@
 (add-hook 'clojurescript-mode-hook 'company-mode)
 (add-hook 'clojurescript-mode-hook 'whitespace-cleanup-mode)
 
+
+;; Hooks for go
+
+(defun my-go-mode-hook ()
+  ; Call Gofmt before saving
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ; Godef jump key binding
+  (local-set-key (kbd "M-.") 'godef-jump)
+  (local-set-key (kbd "M-,") 'pop-tag-mark))
+(add-hook 'go-mode-hook 'my-go-mode-hook)
+
+(add-hook 'go-mode-hook 'company-mode)
+(add-hook 'go-mode-hook (lambda ()
+  (set (make-local-variable 'company-backends) '(company-go))
+  (company-mode)))
+;; enable flycheck
+(add-hook 'go-mode-hook 'flycheck-mode)
+
+;; General hooks
+(add-hook 'org-mode-hook 'turn-on-auto-fill)
+(add-hook 'org-mode-hook
+          (lambda()
+            (set-fill-column 110)))
+
+(add-hook 'python-mode-hook 'whitespace-cleanup-mode)
 ;; disable auto-save
 (setq auto-save-default nil)
 
@@ -106,7 +138,7 @@
 
 ;; highlight tabs, spaces and empty line (at the beginning and end of file)
 (setq
-   whitespace-style '(face trailing tabs empty))
+   whitespace-style '(face trailing empty)) ;; you can add tabs to highlight tabs as well
 (global-whitespace-mode 1)
 
 ;; do not write tab
