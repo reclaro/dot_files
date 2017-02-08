@@ -13,11 +13,6 @@ alias noproxies='unset https_proxy; unset http_proxy; unset HTTPS_PROXY; unset H
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias rnda='cd ~/vegas-RNDA; noproxies; echo "proxies unset"; workon OSClients'
-alias rndb='cd ~/vegas-RNDB; noproxies; echo "proxies unset"; workon OSClients'
-alias rndd='cd ~/vegas-RNDD; noproxies; echo "proxies unset"; workon OSClients; alias neutron="neutron --insecure"'
-alias rnde='cd ~/vegas-RNDE; noproxies; echo "proxies unset"; workon OSClients; alias neutron="neutron --insecure"'
-alias stb='cd ~/vegas-STB; unset https_proxy; echo "proxies unset"; workon OSClients; alias neutron="neutron --insecure"'
 # That should work fine but no for me so creating an alis
 alias .='source'
 
@@ -73,14 +68,6 @@ export SAVEHIST=$HISTSIZE
 setopt interactivecomments
 #
 export EDITOR=vim
-
-#Proxy
-export http_proxy=<PROXYADDRESS>
-export https_proxy=<PROXYADDRESS>
-export ftp_proxy=<PROXYADDRESS>
-#export no_proxy=
-
-export PATH=/home/andrea/src/hpcs-nova-buildhelper:/home/andrea/src/hpcs-nova-buildhelper/scripts:/sbin:$PATH
 
 # RVM
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting

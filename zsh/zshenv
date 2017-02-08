@@ -5,11 +5,11 @@ export PATH=$HOME/tools/maven/apache-maven-3.3.9/bin:$HOME/bin:$PATH
 
 
 # Proxy settings
-export http_proxy=http://www-proxy-ukc1.uk.oracle.com:80
+export http_proxy=http://<PROXY>:80
 export https_proxy=$http_proxy
 export HTTP_PROXY=$http_proxy
 export HTTPS_PROXY=$http_proxy
-export no_proxy='.oraclecorp.com,localhost,127.0.0.1,public-yum.oracle.com,92.232.217.160'
+export no_proxy=''
 export NO_PROXY=$no_proxy
 
 # virtualenvwrapper settings
