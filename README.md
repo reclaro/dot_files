@@ -1,4 +1,4 @@
 dot_files
 =========
 
-collections of my dot files
+collections of my dot files.
