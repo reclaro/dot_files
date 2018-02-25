@@ -29,14 +29,13 @@ URxvt.matcher.button: 1
 !URxvt*faceName: Source Code Pro for Powerline
 !URxvt*faceName: Ubuntu Mono derivative Powerline
 !URxvt*faceName: DejaVu Sans Mono for Powerline
-!URxvt*faceName: inconsolata for powerline-medium-r-normal--0-0-0-0-p-0-iso8859-9
 !URxvt*faceName: Ubuntu Mono derivative Powerline:style=Bold
 !URxvt*faceName: Literation Mono Powerline
 
 URxvt.allow_bold: true
-!URxvt.font: xft:Source Code Pro for Powerline:size=11
-!URxvt.font: xft:Inconsolata for Powerline:style=dz
-URxvt.font: xft:Droid Sans Mono for Powerline:size=10
+!URxvt.font: xft:Source Code Pro for Powerline:size=10
+URxvt.font: xft:Inconsolata for Powerline:style=dz:size=10
+!ok URxvt.font: xft:Droid Sans Mono for Powerline:size=8
 Xft.antialias: 1
 Xft.autohint: 0
 Xft.dpi: 96
@@ -70,26 +69,124 @@ Xft.rgba: rgb
 ! the color assignment statement with its name. Example:
 !
 ! URxvt*background: #002b36
-*background: #002b36
-*foreground: #839496
-*fading: 40
-*fadeColor: #002b36
-*cursorColor: #93a1a1
-*pointerColorBackground: #586e75
-*pointerColorForeground: #93a1a1
-*color0: #073642
-*color1: #dc322f
-*color2: #859900
-*color3: #b58900
-*color4: #268bd2
-*color5: #d33682
-*color6: #2aa198
-*color7: #eee8d5
-*color9: #cb4b16
-*color8: #002b36
-*color10: #586e75
-*color11: #657b83
-*color12: #839496
-*color13: #6c71c4
-*color14: #93a1a1
-*color15: #fdf6e3
+! Starting here
+! *background: #002b36
+! *foreground: #839496
+! *fading: 40
+! *fadeColor: #002b36
+! *cursorColor: #93a1a1
+! *pointerColorBackground: #586e75
+! *pointerColorForeground: #93a1a1
+! *color0: #073642
+! *color1: #dc322f
+! *color2: #859900
+! *color3: #b58900
+! *color4: #268bd2
+! *color5: #d33682
+! *color6: #2aa198
+! *color7: #eee8d5
+! *color9: #cb4b16
+! *color8: #002b36
+! *color10: #586e75
+! *color11: #657b83
+! *color12: #839496
+! *color13: #6c71c4
+! *color14: #93a1a1
+! *color15: #fdf6e3
+! Nice grey and red
+! *.foreground:   #ffffff
+! *.background:   #101010
+! *.cursorColor:  #ffffff
+
+! ! black
+! *.color0:       #262626
+! *.color8:       #616161
+
+! ! red
+! *.color1:       #830e0c
+! *.color9:       #c84f4c
+
+! ! green
+! *.color2:       #a72b28
+! *.color10:      #ef8380
+
+! ! yellow
+! *.color3:       #c64b48
+! *.color11:      #ffb1af
+
+! ! blue
+! *.color4:       #ed7c79
+! *.color12:      #ffd1d0
+
+! ! magenta
+! *.color5:       #ffaba9
+! *.color13:      #ffe9e9
+
+! ! cyan
+! *.color6:       #ffcecb
+! *.color14:      #fff8f8
+
+! ! white
+! *.color7:       #eaeaea
+! *.color15:      #ffffff
+
+!! Bello
+! *.foreground:   #c0c5ce
+! *.background:   #273941
+! *.cursorColor:  #c0c5ce
+
+! ! black
+! *.color0:       #273941
+! *.color8:       #456472
+
+! ! red
+! *.color1:       #a66363
+! *.color9:       #c27171
+
+! ! green
+! *.color2:       #63a690
+! *.color10:      #6dc2a3
+
+! ! yellow
+! *.color3:       #a6a663
+! *.color11:      #bfc271
+
+! ! blue
+! *.color4:       #6385a6
+! *.color12:      #719bc2
+
+! ! orange
+! *.color5:       #BF9C86
+! *.color13:      #BF9C86
+
+! ! cyan
+! *.color6:       #63a69b
+! *.color14:      #71c2af
+
+! ! white
+! *.color7:       #c0c5ce
+! *.color15:      #eff1f5
+
+
+
+
+! SAMI
+*foreground:	#ecf0f1
+*background:	#141516
+*cursorColor:	#ecf0f1
+*color0:	#3e464e
+*color8:	#3e464e
+*color1:	#db0a5b
+*color9:	#db0a5b
+*color2:	#3fc380
+*color10:	#3fc380
+*color3:	#f2784b
+*color11:	#f2784b
+*color4:	#22a7f0
+*color12:	#22a7f0
+*color5:	#f64747
+*color13:	#f64747
+*color6:	#55aeae
+*color14:	#55aeae
+*color7:	#ecf0f1
+*color15:	#ecf0f1

@@ -1,4 +1,10 @@
 #DEBIAN_PREVENT_KEYBOARD_CHANGES=yes
+#
+# setting the right keyboard layout
+setxkbmap gb
+# swap CAPS LOCK to ctrl
+setxkbmap -option caps:ctrl_modifier
+
 
 # playing with PATH
 export PATH=$HOME/tools/maven/apache-maven-3.3.9/bin:$HOME/bin:$PATH

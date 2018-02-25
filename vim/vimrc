@@ -47,7 +47,7 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 " Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-NeoBundle 'bling/vim-airline'            " better status line
+NeoBundle 'vim-airline/vim-airline-themes'            " better status line
 NeoBundle 'altercation/vim-colors-solarized.git' " solarized color scheme
 NeoBundle 'kien/ctrlp.vim'               " fuzzy file finder
 NeoBundle 'nvie/vim-flake8.git'           " flake8 vim integratio F7 to run

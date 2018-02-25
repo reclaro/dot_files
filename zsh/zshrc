@@ -78,9 +78,6 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 #let keychain to mangage my key
 eval `keychain --quiet --eval id_rsa`
-#
-# setting the right keyboard layout
-setxkbmap gb
 
 # setting grep color
 export GREP_COLOR='1;37;41'
