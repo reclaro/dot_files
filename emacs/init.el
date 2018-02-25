@@ -4,19 +4,20 @@
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+(add-to-list 'load-path "~/.emacs.d/lisp/")
 (package-initialize) ;; You might already have this line
 
 ;; load exec-path-from-shell for set the correct ENV path in MAC OS
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
-
+(require 'cl)
 
 ;;(load-theme 'monokai t) ;;very good but too strong contrast
 ;;(load-theme 'seti t)
-;;(load-theme 'spolsky t) ;;inspired by sublime default theme, too strong after a while I get annoyed
+;;(load-theme 'spolsky t)
 (load-theme 'solarized-dark t)
 
-;; Set emacs background colour this should be the default bk color for seti theme
+; Set emacs background colour this should be the default bk color for seti theme
 ;;(set-background-color "#151718")
 
 ;;(set-cursor-color "#E6DB74")
@@ -52,6 +53,11 @@
 ;; enable automatic auto-revert
 (global-auto-revert-mode 1)
 
+;; show column number
+(setq column-number-mode t)
+
+;; Every time when the neotree window is opened, let it find current file and jump to node
+(setq new-smart-open t)
 
 (require 'ace-jump-mode)
 (define-key global-map (kbd "M-0") 'ace-jump-word-mode)
@@ -83,10 +89,20 @@
 (add-hook 'clojurescript-mode-hook 'company-mode)
 (add-hook 'clojurescript-mode-hook 'whitespace-cleanup-mode)
 
+;;python ide
+(elpy-enable)
+
+;; Hooks for python
+(defun my-python-mode-hook ()
+  (local-set-key (kbd "M-,") 'pop-tag-mark)) ;; it doesn't work :(
+(add-hook 'python-mode-hook 'my-python-mode-hook)
+(add-hook 'python-mode-hook 'whitespace-cleanup-mode)
 
 ;; Hooks for go
-
 (defun my-go-mode-hook ()
+   ; Use goimports instead of go-fmt
+   ; was ok but found a strange corner case
+  (setq gofmt-command "goimports")
   ; Call Gofmt before saving
   (add-hook 'before-save-hook 'gofmt-before-save)
   ; Godef jump key binding
@@ -100,6 +116,18 @@
   (company-mode)))
 ;; enable flycheck
 (add-hook 'go-mode-hook 'flycheck-mode)
+
+(require 'go-guru)
+;; Begin clojure flyckeck
+;; attempt to add flyckeck for clojure but got the error:
+;; 'flycheck-clojure-inject-jack-in-dependencies: Symbol's value as variable is void: cider-jack-in-dependencies-exclusions'
+;; to avoid this issue I think you need to run the flycheck-clojure-setup only after started a cider-jack-in. No it doesnt' work
+;(eval-after-load 'flycheck '(flycheck-clojure-setup))
+;; (add-hook 'after-init-hook #'global-flycheck-mode)
+
+; (eval-after-load 'flycheck
+;   '(setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
+;; end clojure flycheck
 
 ;; General hooks
 (add-hook 'org-mode-hook 'turn-on-auto-fill)
@@ -172,15 +200,15 @@
 
 
 ;;using the Figwheel REPL connected in emacs
-(require 'cider)
-(setq cider-cljs-lein-repl
-      "(do (require 'figwheel-sidecar.repl-api)
-           (figwheel-sidecar.repl-api/start-figwheel!)
-           (figwheel-sidecar.repl-api/cljs-repl))")
+;; Loading cider is taking 75 seconds I don't need it now so commenting but
+;; it is important to understand why and re-enable it eventually.
+;;(require 'cider)
+;;(setq cider-cljs-lein-repl
+;;     "(do (require 'figwheel-sidecar.repl-api)
+;;         (figwheel-sidecar.repl-api/start-figwheel!)
+;;        (figwheel-sidecar.repl-api/cljs-repl))")
 
 (tabbar-mode 't)
-;;python ide
-(elpy-enable)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -218,3 +246,4 @@
  '(tabbar-selected ((t (:inherit tabbar-default :foreground "orange1"))))
  '(tabbar-separator ((t (:inherit tabbar-default))))
  '(tabbar-unselected ((t (:inherit tabbar-default)))))
+(put 'upcase-region 'disabled nil)
