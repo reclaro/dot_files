@@ -9,18 +9,18 @@
 
 ;; load exec-path-from-shell for set the correct ENV path in MAC OS
 (when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-env "GOPATH"))
+
+(add-to-list 'exec-path "/Users/androsa/code/go/bin")
+
+(add-hook 'markdown-mode-hook 'flyspell-mode)
 (require 'cl)
 
-;;(load-theme 'monokai t) ;;very good but too strong contrast
-;;(load-theme 'seti t)
-;;(load-theme 'spolsky t)
+(require 'company)
+(require 'company-lsp)
 (load-theme 'solarized-dark t)
 
-; Set emacs background colour this should be the default bk color for seti theme
-;;(set-background-color "#151718")
-
-;;(set-cursor-color "#E6DB74")
 (set-default 'cursor-type 'box)
 
 ;; disable startup screen
@@ -30,18 +30,6 @@
 (global-set-key [home] 'move-beginning-of-line)
 (global-set-key [end] 'move-end-of-line)
 
-;;;;;;;;;;; Mode line themes and packages
-;; enable powerline
-;;(require 'powerline)
-;;(powerline-default-theme)
-;;(setq sml/theme ')
-;;(sml/setup)
-;;(require 'spaceline-config)
-;;(spaceline-spacemacs-theme)
-;;(spaceline-emacs-theme)
-
-
-;; disable toolbar
 (tool-bar-mode -1)
 ;; disable scrollbar
 (scroll-bar-mode -1)
@@ -77,20 +65,21 @@
 
 (show-paren-mode 1)
 (set-face-foreground 'show-paren-match "white") ;;showing the matching paren in the specific color
-(set-face-attribute  'show-paren-match-face nil :weight 'extra-bold) ;;you can specify :height 130
+;;(set-face-attribute  'show-paren-match-face nil :weight 'extra-bold) ;;you can specify :height 130
 
 ;; Hooks for clojure and clojure-script
 
 (add-hook 'clojure-mode-hook 'paredit-mode)
-(add-hook 'clojure-mode-hook 'company-mode)
+;; Enable if you use clojure (add-hook 'clojure-mode-hook 'company-mode)
 (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'clojure-mode-hook 'whitespace-cleanup-mode)
 (add-hook 'clojurescript-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'clojurescript-mode-hook 'company-mode)
+;; enable it if you use clojurescript (add-hook 'clojurescript-mode-hook 'company-mode)
 (add-hook 'clojurescript-mode-hook 'whitespace-cleanup-mode)
 
-;;python ide
-(elpy-enable)
+;;python ide when moved to emacs26 was returning an error
+;; TODO fix the eply-enable for python, or find something better
+;;(elpy-enable)
 
 ;; Hooks for python
 (defun my-python-mode-hook ()
@@ -98,26 +87,54 @@
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 (add-hook 'python-mode-hook 'whitespace-cleanup-mode)
 
-;; Hooks for go
-(defun my-go-mode-hook ()
-   ; Use goimports instead of go-fmt
-   ; was ok but found a strange corner case
-  (setq gofmt-command "goimports")
-  ; Call Gofmt before saving
-  (add-hook 'before-save-hook 'gofmt-before-save)
-  ; Godef jump key binding
-  (local-set-key (kbd "M-.") 'godef-jump)
-  (local-set-key (kbd "M-,") 'pop-tag-mark))
-(add-hook 'go-mode-hook 'my-go-mode-hook)
 
-(add-hook 'go-mode-hook 'company-mode)
-(add-hook 'go-mode-hook (lambda ()
-  (set (make-local-variable 'company-backends) '(company-go))
-  (company-mode)))
-;; enable flycheck
-(add-hook 'go-mode-hook 'flycheck-mode)
+
+;; use GNU find rather than pure elisp find
+;; https://gist.github.com/juergenhoetzel/8107a01039df08ea3f1c208494ddd7bf
+(defun go-packages-find ()
+  (sort
+   (delete-dups
+    (cl-mapcan (lambda (topdir)
+                 (let ((pkgdir (concat topdir "/pkg")))
+                   (mapcar (lambda (file)
+                             (let ((sub (substring file 0 -2)))
+                               (mapconcat #'identity (cdr (split-string sub "/")) "/")))
+                           (split-string (shell-command-to-string
+                                          (format "find \"%s\" -not -path \"%s/tool*\" -not -path \"%s/obj/*\" -name \"*.a\"  -printf \"%%P\\n\""
+                                                  pkgdir pkgdir pkgdir))))))
+               (go-root-and-paths)))
+   #'string<))
+(setq go-packages-function 'go-packages-find)
+
+;; Hooks for go
+(defun mrc-go-mode ()
+  (interactive)
+  (go-guru-hl-identifier-mode)
+  (go-eldoc-setup)
+  (flycheck-mode 1)
+  (lsp-deferred)
+  (set (make-local-variable 'company-backends) '(company-lsp company-capf company-files))
+  (company-mode 1)
+  (company-quickhelp-mode 1)
+  (local-set-key (kbd "C-c C-?") 'gofmt)
+  (local-set-key [remap xref-find-definitions] 'lsp-ui-peek-find-definitions)
+  (local-set-key [remap xref-find-references] 'lsp-ui-peek-find-references)
+  (local-set-key [remap xref-find-apropos] 'lsp-ui-peek-find-workspace-symbol)
+  (local-set-key (kbd "C-x 4 .") 'godef-jump-other-window)
+  (local-set-key (kbd "C-c .") 'godoc-at-point))
+
+(add-hook 'go-mode-hook #'mrc-go-mode)
+; Call Gofmt before saving
+(add-hook 'before-save-hook 'gofmt-before-save)
+
+;;  disable snippet support. You can try to see if it is useful installing yasnippet
+(setq lsp-enable-snippet nil)
 
 (require 'go-guru)
+(go-guru-hl-identifier-mode)
+(add-hook 'go-mode-hook #'go-guru-hl-identifier-mode)
+(add-hook 'go-mode-hook 'flyspell-prog-mode)
+
 ;; Begin clojure flyckeck
 ;; attempt to add flyckeck for clojure but got the error:
 ;; 'flycheck-clojure-inject-jack-in-dependencies: Symbol's value as variable is void: cider-jack-in-dependencies-exclusions'
@@ -138,8 +155,6 @@
 (add-hook 'python-mode-hook 'whitespace-cleanup-mode)
 ;; disable auto-save
 (setq auto-save-default nil)
-
-
 
 ;; scroll one line at a time (less "jumpy" than defaults)
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
@@ -210,6 +225,10 @@
 
 (tabbar-mode 't)
 
+
+;; disable the lsp-ui-sideline
+(setq lsp-ui-sideline-enable nil)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -219,6 +238,13 @@
    (quote
     ("VioletRed1" "red1" "dark blue" "green3" "dark cyan" "purple4" "forest green")))
  '(highlight-symbol-foreground-color "gray100")
+ '(lsp-ui-sideline-delay 5.0)
+ '(lsp-ui-sideline-ignore-duplicate nil)
+ '(lsp-ui-sideline-show-code-actions nil)
+ '(markdown-open-command "macdown")
+ '(package-selected-packages
+   (quote
+    (markdown-preview-eww markdown-mode+ markdown-mode go-snippets lsp-mode company-go magit zenburn-theme yaml-mode whitespace-cleanup-mode terraform-mode tabbar sublime-themes spaceline solarized-theme smart-mode-line-powerline-theme seti-theme rainbow-delimiters paredit neotree monokai-theme highlight-symbol guide-key groovy-mode gradle-mode go-playground go-imports go-eldoc flyspell-correct flycheck-pos-tip flycheck-clojure expand-region exec-path-from-shell esup elpy elixir-mode css-eldoc color-theme-solarized ag ace-window ace-jump-mode)))
  '(tabbar-background-color "#0A2933")
  '(tabbar-mode t nil (tabbar))
  '(tabbar-mwheel-mode t nil (tabbar))
@@ -231,6 +257,8 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 110 :width normal :foundry "nil" :family "Menlo"))))
  '(linum ((t (:foreground "orange1" :weight light :height 0.9))))
+ '(lsp-ui-doc-background ((t (:background "#272A36" :box nil))))
+ '(lsp-ui-sideline-global ((t (:height 90))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark cyan"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "dark magenta"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "maroon1"))))
