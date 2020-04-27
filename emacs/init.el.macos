@@ -6,13 +6,11 @@
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (add-to-list 'load-path "/Users/androsa/.emacs.d/lisp/")
 (package-initialize)
-;; todo
-;; check smex vs amx. Installed smex but probably better to use it as smex-major-mode-commands which is smex only for the major mode but smex gives more hints.
-;; I think you need to try to use it
-;; try to better understand why projectile open project is enable only with one project open and not from the beginning. is it related to where that project file is?
-;; at the moment it is in the.emacs.d folder
+
 ;; load exec-path-from-shell for set the correct ENV path in MAC OS
 (when (memq window-system '(mac ns))
+  (use-package exec-path-from-shell
+    :ensure t)
   (exec-path-from-shell-initialize)
   (exec-path-from-shell-copy-env "GOPATH"))
 
@@ -45,6 +43,22 @@
 (global-set-key (kbd "M-,") 'pop-tag-mark)
 (global-set-key [f8] 'neotree-toggle)
 (global-set-key [f6] 'show-file-name)
+
+;;windows move
+(global-set-key (kbd "M-s-<right>") 'windmove-right)
+(global-set-key (kbd "M-s-<left>") 'windmove-left)
+(global-set-key (kbd "M-s-<up>") 'windmove-up)
+(global-set-key (kbd "M-s-<down>") 'windmove-down)
+
+;highlight
+(global-set-key [f5] 'highlight-symbol)
+(global-set-key [(control f5)] 'highlight-symbol-next)
+(global-set-key [(shift f5)] 'highlight-symbol-prev)
+(global-set-key [(meta f5)] 'highlight-symbol-query-replace)
+
+;awesome-tab
+(global-set-key (kbd "s-t") 'awesome-tab-ace-jump)
+
 ;; misc
 ;; When running ‘projectile-switch-project’ (C-c p p), ‘neotree’ will change root automatically.
 (setq projectile-switch-project-action 'neotree-projectile-action)
@@ -69,7 +83,22 @@
 (require 'company-lsp)
 (push 'company-lsp company-backends)
 
-(require 'ag)
+(use-package  markdown-mode
+  :config
+  (add-hook 'markdown-mode-hook 'flyspell-mode))
+
+(use-package ag
+  :ensure t)
+
+(use-package awesome-tab
+  :load-path "/home/andrea/.emacs/lisp/awesome-tab"
+  :config
+  (awesome-tab-mode t)
+  (setq awesome-tab-height 100)
+  (setq awesome-tab-ace-keys (quote (49 50 51 52 53 54 55 56 57 48)))
+  (setq awesome-tab-dark-active-bar-color nil)
+  (setq awesome-tab-dark-selected-foreground-color "orange1"))
+;  (setq awesome-tab-selected-face ((t (:background "#002b36" :foreground "orange1")))))
 ;; auto-revert if the file is updated by an external program
 (global-auto-revert-mode 1)
 
@@ -92,6 +121,14 @@
   ("C-." . 'ace-jump-mode)
   ("C-:" . 'ace-jump-mode-pop-mark))
 ; that creates an autoload for ace-jump-mode command and defers loading until you use it
+
+(use-package highlight-symbol
+  :ensure t
+  :config
+  (setq highlight-symbol-colors ;if they are too bright use default ones
+   (quote
+    ("VioletRed1" "red1" "dark blue" "green3" "dark cyan" "purple4" "forest green")))
+  (setq highlight-symbol-foreground-color "gray100"))
 
 (use-package whitespace
   :ensure t
@@ -173,7 +210,10 @@
 	("M-p" . 'compile))
 
   :config
-  (go-eldoc-setup) ; it provides eldoc for go
+  (use-package go-eldoc
+   :ensure t
+   :config
+   (go-eldoc-setup)) ; it provides eldoc for go
  ; (use-package godoctor
   ;  :ensure t)
   (company-mode 1)
