@@ -31,7 +31,8 @@
 (load-theme 'solarized-dark t)
 ;;(load-theme 'spacemacs-dark t)
 (set-face-attribute 'default nil :height 110)
-
+(setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+(doom-themes-treemacs-config)
 ;spaceline with some fancy look & feel
 (require 'spaceline-config)
 (spaceline-emacs-theme)
@@ -46,8 +47,13 @@
 ;(display-line-numbers-mode) ;; available from emacs 26
 ;; global  mapping
 (global-set-key (kbd "M-,") 'pop-tag-mark)
-(global-set-key [f8] 'neotree-toggle)
+(global-set-key [f8] 'treemacs)
 (global-set-key [f6] 'show-file-name)
+
+;; org-mode
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
 
 ;;windows move
 (global-set-key (kbd "M-s-<right>") 'windmove-right)
@@ -76,9 +82,6 @@
 
 ;anzu
 (global-set-key [remap query-replace] 'anzu-query-replace)
-;; misc
-;; When running ‘projectile-switch-project’ (C-c p p), ‘neotree’ will change root automatically.
-(setq projectile-switch-project-action 'neotree-projectile-action)
 
 ;;set backup folder and settings
 (setq
@@ -96,6 +99,10 @@
   (interactive)
   (message (buffer-file-name)))
 
+(defun my-org-mode-hook ()
+  (setq fill-column 140)
+  (auto-fill-mode t))
+
 ;; packages
 (require 'company-lsp)
 (push 'company-lsp company-backends)
@@ -111,6 +118,43 @@
 ;;   :after spaceline
 ;;   :config (spaceline-all-the-icons-theme))
 
+
+;; remove asterics for something more fancy
+(require 'org-superstar)
+
+
+
+(use-package treemacs
+  :ensure t
+  :config
+  ;(setq treemacs-no-png-images t) ;; disable icons
+  )
+
+
+(use-package org
+  :config
+  (setq org-startup-indented t)
+  (setq fill-column 140)
+  (setq org-log-done 'time)
+  (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+  (setq org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\.org$"))
+  ;(setq org-agenda-files (file-expand-wildcards "/Users/androsa/Dropbox/org/*.org"))
+  (setq org-time-stamp-custom-formats (quote ("<%d/%m/%y %a>" . "<%d/%m/%y %a %H:%M>")))
+   (setq org-babel-load-languages
+    (quote
+    ((lisp . t)
+     (python . t)
+     (shell . t)
+     (clojure . t)
+     (java . t)
+     (makefile . t))))
+;   (add-hook 'org-mode-hook 'turn-on-auto-fill)
+   (add-hook 'org-mode-hook #'my-org-mode-hook)
+   (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+   (add-hook 'before-save-hook 'whitespace-cleanup)
+   )
+
+
 (use-package all-the-icons)
 (use-package anzu
   :ensure t
@@ -118,9 +162,14 @@
   (global-anzu-mode 1))
 
 
+(use-package flyspell
+  :ensure t
+  :hook ((org-mode markdown-mode) . flyspell-mode))
+
 (use-package  markdown-mode
   :config
-  (add-hook 'markdown-mode-hook 'flyspell-mode))
+  (setq markdown-make-gfm-checkboxes-buttons nil))
+;  (add-hook 'markdown-mode-hook 'flyspell-mode))
 
 (use-package ag
   :ensure t)
@@ -143,6 +192,10 @@
 
 (use-package frog-jump-buffer
   :ensure t
+  :config
+  (setq frog-jump-buffer-include-current-buffer nil)
+  (setq frog-jump-buffer-max-buffers 120)
+
   :chords (("bn" . frog-jump-buffer-other-window)
 	   ("bb" . frog-jump-buffer)))
 
@@ -213,7 +266,7 @@
 (use-package lsp-mode
    :ensure t
    :config
-   (setq lsp-file-watch-threshold 3000) ; over the threshold it will ask for confirmation to watch files, default is set to 1000
+   (setq lsp-file-watch-threshold 100000) ; over the threshold it will ask for confirmation to watch files, default is set to 1000
    :hook ((go-mode . lsp))
    :commands lsp)
 
@@ -223,6 +276,14 @@
    :bind
    (:map lsp-ui-mode-map
 	 ("<f12>" . lsp-ui-peek-find-references)))
+;; Python configuration
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable)
+  :config
+  (setq python-shell-interpreter "ipython"
+      python-shell-interpreter-args "-i --simple-prompt"))
 
 (use-package go-mode
   :ensure t
@@ -267,14 +328,16 @@
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(gnutls-algorithm-priority "normal:-vers-tls1.3")
+ '(markdown-make-gfm-checkboxes-buttons nil)
  '(package-selected-packages
    (quote
-    (paradox spaceline-all-the-icons anzu pomodoro spaceline all-the-icons-gnus yaml-mode load-theme-buffer-local color-theme-buffer-local magit flymake exec-path-from-shell let-alist use-package-chords key-chord frog-jump-buffer ace-jump ace-jump-mode expand-region smex ido-grid-mode ido-vertical-mode neotree which-key ag projectile godoctor smartparens spacemacs-theme solarized-theme solaire-mode lsp-ui flyspell-correct company-quickhelp company go-scratch go-dlv go-eldoc go-playground go-guru flycheck go-mode)))
+    (elpy doom-themes kaolin-themes treemacs-icons-dired treemacs-projectile treemacs org-superstar paradox spaceline-all-the-icons anzu spaceline all-the-icons-gnus yaml-mode load-theme-buffer-local color-theme-buffer-local magit flymake exec-path-from-shell let-alist use-package-chords key-chord frog-jump-buffer ace-jump ace-jump-mode expand-region smex ido-grid-mode ido-vertical-mode which-key ag projectile godoctor smartparens spacemacs-theme solarized-theme solaire-mode lsp-ui flyspell-correct company-quickhelp company go-scratch go-dlv go-eldoc go-playground go-guru flycheck go-mode)))
  '(paradox-github-token t)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(treemacs-fringe-indicator-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(org-checkbox ((t (:background "#002b36" :foreground "#839496" :box nil)))))
