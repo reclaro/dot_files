@@ -1,4 +1,4 @@
-(require 'package) ;; You might already have this line
+(require 'package)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
 (when (< emacs-major-version 24)
@@ -21,7 +21,10 @@
 (setq inhibit-startup-message t)
 ;; disable auto-save
 (setq auto-save-default nil)
-
+;; auto-revert mode
+(setq global-auto-revert-mode t)
+;; disable lock file
+(setq create-lockfiles nil)
 ;; scroll one line at a time (less "jumpy" than defaults)
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed 't) ;; don't accelerate scrolling
@@ -99,6 +102,8 @@
   (interactive)
   (message (buffer-file-name)))
 
+
+
 (defun my-org-mode-hook ()
   (setq fill-column 140)
   (auto-fill-mode t))
@@ -109,7 +114,9 @@
 
 ;; auto-revert if the file is updated by an external program
 (global-auto-revert-mode 1)
-
+(global-flycheck-mode 1)
+(global-whitespace-mode 1)
+(yas-global-mode 1)
 
 ;; you might decide to activate all-the-icons for spaceline as well
 ;; it has some good mouse shortcut but I am not fully convinced of it
@@ -118,18 +125,26 @@
 ;;   :after spaceline
 ;;   :config (spaceline-all-the-icons-theme))
 
-
 ;; remove asterics for something more fancy
-(require 'org-superstar)
-
-
+(use-package org-superstar
+  :ensure t)
 
 (use-package treemacs
   :ensure t
   :config
+  (setq treemacs-single-click-expand-action t)
+  (setq treemacs-space-between-root-nodes nil)
   ;(setq treemacs-no-png-images t) ;; disable icons
   )
 
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :ensure t
+  :config (treemacs-icons-dired-mode))
 
 (use-package org
   :config
@@ -148,7 +163,6 @@
      (clojure . t)
      (java . t)
      (makefile . t))))
-;   (add-hook 'org-mode-hook 'turn-on-auto-fill)
    (add-hook 'org-mode-hook #'my-org-mode-hook)
    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
    (add-hook 'before-save-hook 'whitespace-cleanup)
@@ -220,7 +234,7 @@
 (use-package whitespace
   :ensure t
   :config
-  (global-whitespace-mode 1)
+
   (setq whitespace-style '(face trailing empty)))
 
 (use-package linum
@@ -340,4 +354,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(linum ((t (:background "#002b36" :foreground "#586e75" :underline nil :weight thin :height 90))))
  '(org-checkbox ((t (:background "#002b36" :foreground "#839496" :box nil)))))
