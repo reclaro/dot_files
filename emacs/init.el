@@ -29,6 +29,8 @@
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed 't) ;; don't accelerate scrolling
 (setq scroll-margin 1) ;; trigger the scrolling when I am on the last line
+;; enable delete on type for region
+(delete-selection-mode 1)
 
 ;; Look and Feel
 (load-theme 'solarized-dark t)
@@ -52,7 +54,7 @@
 (global-set-key (kbd "M-,") 'pop-tag-mark)
 (global-set-key [f8] 'treemacs)
 (global-set-key [f6] 'show-file-name)
-
+(global-set-key [remap zap-to-char] 'zop-to-char) ; zop-to-char is way better as it highlights the selection and gives more option
 ;; org-mode
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
@@ -102,6 +104,9 @@
   (interactive)
   (message (buffer-file-name)))
 
+(use-package use-package-chords
+  :ensure t
+  :config (key-chord-mode 1))
 
 
 (defun my-org-mode-hook ()
@@ -117,7 +122,6 @@
 (global-flycheck-mode 1)
 (global-whitespace-mode 1)
 (yas-global-mode 1)
-
 ;; you might decide to activate all-the-icons for spaceline as well
 ;; it has some good mouse shortcut but I am not fully convinced of it
 
@@ -147,15 +151,19 @@
   :config (treemacs-icons-dired-mode))
 
 (use-package org
+  :chords
+   (("df" . org-toggle-time-stamp-overlays))
+
   :config
   (setq org-startup-indented t)
-  (setq fill-column 140)
-  (setq org-log-done 'time)
+  (setq org-catch-invisible-edits 'show-and-error)
+  (setq org-hide-emphasis-markers t)
+  (setq org-M-RET-may-split-line (quote ((default)))) ;; M-RET in the middle of a line doesn't break the line
+  (setq org-log-done 'time) ; set this per file as well
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
-  (setq org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\.org$"))
-  ;(setq org-agenda-files (file-expand-wildcards "/Users/androsa/Dropbox/org/*.org"))
+  (setq org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\.txt$"))
   (setq org-time-stamp-custom-formats (quote ("<%d/%m/%y %a>" . "<%d/%m/%y %a %H:%M>")))
-   (setq org-babel-load-languages
+  (setq org-babel-load-languages
     (quote
     ((lisp . t)
      (python . t)
@@ -163,10 +171,15 @@
      (clojure . t)
      (java . t)
      (makefile . t))))
+  (setq org-todo-keywords
+	'((sequence "TODO(t)" "INPROGRESS(p)" "MEETING(m)" "TOREAD(r)" "TOWATCH(w)" "BLOCKED(b)"  "|" "DONE(d)" )
+	  ))
+  (setq org-todo-keyword-faces
+   '(("MEETING" . "orange") ("INPROGRESS" . "Salmon") ("TOREAD" . "MediumPurple") ("TOWATCH" . "DeepSkyBlue4") ("BLOCKED" . "firebrick") | ("DONE" . "LimeGreen")))
    (add-hook 'org-mode-hook #'my-org-mode-hook)
    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
-   (add-hook 'before-save-hook 'whitespace-cleanup)
-   )
+   (add-hook 'before-save-hook 'whitespace-cleanup))
+
 
 
 (use-package all-the-icons)
@@ -199,9 +212,6 @@
   (setq awesome-tab-dark-selected-foreground-color "orange1"))
 ;  (setq awesome-tab-selected-face ((t (:background "#002b36" :foreground "orange1")))))
 
-(use-package use-package-chords
-  :ensure t
-  :config (key-chord-mode 1))
 
 
 (use-package frog-jump-buffer
@@ -334,6 +344,7 @@
 ;; flycheck mode is enabled by default and all customisation I tried get ignored :(
 
 (setenv "GOPATH" "/Users/androsa/code/go")
+(add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -341,12 +352,19 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
+ '(custom-safe-themes
+   (quote
+    ("2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" default)))
  '(gnutls-algorithm-priority "normal:-vers-tls1.3")
  '(markdown-make-gfm-checkboxes-buttons nil)
+ '(org-agenda-files
+   (quote
+    ("/Users/androsa/Dropbox/org/billbook.txt" "/Users/androsa/Dropbox/org/emacstodo.txt" "/Users/androsa/Dropbox/org/todo.txt")))
  '(package-selected-packages
    (quote
-    (elpy doom-themes kaolin-themes treemacs-icons-dired treemacs-projectile treemacs org-superstar paradox spaceline-all-the-icons anzu spaceline all-the-icons-gnus yaml-mode load-theme-buffer-local color-theme-buffer-local magit flymake exec-path-from-shell let-alist use-package-chords key-chord frog-jump-buffer ace-jump ace-jump-mode expand-region smex ido-grid-mode ido-vertical-mode which-key ag projectile godoctor smartparens spacemacs-theme solarized-theme solaire-mode lsp-ui flyspell-correct company-quickhelp company go-scratch go-dlv go-eldoc go-playground go-guru flycheck go-mode)))
+    (zop-to-char elpy doom-themes kaolin-themes treemacs-icons-dired treemacs-projectile treemacs org-superstar paradox spaceline-all-the-icons anzu spaceline all-the-icons-gnus yaml-mode load-theme-buffer-local color-theme-buffer-local magit flymake exec-path-from-shell let-alist use-package-chords key-chord frog-jump-buffer ace-jump ace-jump-mode expand-region smex ido-grid-mode ido-vertical-mode which-key ag projectile godoctor smartparens spacemacs-theme solarized-theme solaire-mode lsp-ui flyspell-correct company-quickhelp company go-scratch go-dlv go-eldoc go-playground go-guru flycheck go-mode)))
  '(paradox-github-token t)
+ '(recentf-mode t)
  '(tool-bar-mode nil)
  '(treemacs-fringe-indicator-mode t))
 (custom-set-faces
@@ -354,5 +372,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(linum ((t (:background "#002b36" :foreground "#586e75" :underline nil :weight thin :height 90))))
+ '(linum ((t (:background "#002b36" :foreground "#586e75" :underline nil :weight thin :height 100))))
  '(org-checkbox ((t (:background "#002b36" :foreground "#839496" :box nil)))))
