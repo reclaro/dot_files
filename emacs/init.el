@@ -34,6 +34,7 @@
 
 ;; Look and Feel
 (load-theme 'solarized-dark t)
+;(load-theme 'solarized-dark-high-contrast t)
 ;;(load-theme 'spacemacs-dark t)
 (set-face-attribute 'default nil :height 110)
 (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
@@ -98,6 +99,10 @@
    kept-old-versions 2
    version-control t); use version number for backups
 
+
+;; This needs to be set-up before org is loaded
+ (setq org-enforce-todo-checkbox-dependencies t)
+
 ;; to show file name
 (defun show-file-name ()
   "Show the full path file name in the minibuffer."
@@ -161,7 +166,8 @@
   (setq org-M-RET-may-split-line (quote ((default)))) ;; M-RET in the middle of a line doesn't break the line
   (setq org-log-done 'time) ; set this per file as well
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
-  ;(setq org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\.org$"))
+  (setq org-enforce-todo-dependencies t)
+  (setq org-refile-targets (quote (("~/Dropbox/org/readwatch.txt" :maxlevel . 1))))
   (setq org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\.txt$"))
   (setq org-time-stamp-custom-formats (quote ("<%d/%m/%y %a>" . "<%d/%m/%y %a %H:%M>")))
   (setq org-babel-load-languages
@@ -173,10 +179,12 @@
      (java . t)
      (makefile . t))))
   (setq org-todo-keywords
-	'((sequence "TODO(t)" "INPROGRESS(p)" "MEETING(m)" "TOREAD(r)" "TOWATCH(w)" "BLOCKED(b)"  "|" "DONE(d)" )
+	'(
+	  (sequence "TODO(t)" "INPROGRESS(i)" "MEETING(m)" "PAUSED(p)" "BLOCKED(b)" "INREVIEW(v)"  "|" "DONE(d)" )
+	  (sequence "TOREAD(r)" "TOWATCH(w)" "|" "DONE(d)")
 	  ))
   (setq org-todo-keyword-faces
-   '(("MEETING" . "orange") ("INPROGRESS" . "Salmon") ("TOREAD" . "MediumPurple") ("TOWATCH" . "DeepSkyBlue4") ("BLOCKED" . "firebrick") | ("DONE" . "LimeGreen")))
+   '(("MEETING" . "yellow") ("INPROGRESS" . "Salmon") ("TOREAD" . "MediumPurple") ("TOWATCH" . "orchid2") ("INREVIEW" . "limeGreen") ("PAUSED" . "magenta") ("BLOCKED" . "firebrick") | ("DONE" . "MistyRose4")))
    (add-hook 'org-mode-hook #'my-org-mode-hook)
    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
    (add-hook 'before-save-hook 'whitespace-cleanup))
@@ -184,7 +192,7 @@
 ;; configuring integration with apt
 (require 'appt)
 (setq appt-time-msg-list nil)    ;; clear existing appt list
-(setq appt-display-interval '5) ;; warn every 10 minutes from t - appt-message-warning-time
+(setq appt-display-interval '10) ;; warn every 10 minutes from t - appt-message-warning-time
 (setq
   appt-message-warning-time '15  ;; send first warning 10 minutes before appointment
   ;appt-display-mode-line nil     ;; don't show in the modeline
@@ -194,7 +202,7 @@
 
 
 (org-agenda-to-appt)             ;; generate the appt list from org agenda files on emacs launch
-(run-at-time "06:30" 300 'org-agenda-to-appt)           ;; update appt list hourly
+(run-at-time "06:30" 600 'org-agenda-to-appt)           ;; update appt list every 10 minutes
 (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
 
 ;; set up the call to terminal-notifier
@@ -212,6 +220,40 @@
     ;(format "'Appointment in %s minutes'" min-to-app)    ;; passed to -title in terminal-notifier call
     (format "'%s'" msg)))                                ;; passed to -message in terminal-notifier call
 (setq appt-disp-window-function (function my-appt-display))
+
+;;org-capture template
+(setq org-capture-templates
+       '(
+         ("t" "Task in progress" entry (file+olp+datetree "~/Dropbox/org/workbook.txt")
+	  "%i\n:SCHEDULED:%^t%?")
+	 ("p" "Pizza" entry (file+headline "~/Dropbox/cooking/pizza.txt" "Tenativo numero: <NN> ")
+	  "* Ingredienti \n%t\n*Numero panielli:* %^{Numero panielli}\n*Peso panielli in gr.*: %^{Peso panielli in gr.}\n*Idratazione (%)*: %^{Idratazione %}%\n*Ore lievitazione totali*: %^{Ore lievitazioni totali}\n*Ore lievitazione in frigor (sulle totali)*: %^{Ore lievitazioni in frigor sulle totali}\n*Temperatura ambiente*: %^{Temperatura ambiente}\n*Farina (gr.)*: %^{Farina gr.} gr.\n*Sale (gr.)*: %^{Sale gr.} gr.\n*Acqua (gr.):* %^{Acqua gr.} gr.\n*Lievito*: %^{Lievito in grammi} gr.\n*Autolisi*: %^{|SI|NO|}\nLavorazione:\n%?"
+	  )
+	 ("j" "Journal entry" plain
+ (function org-journal-find-location)
+ "** %(format-time-string org-journal-time-format)%^{Title}\n%i%?")
+	 ("l" "Read and watch list" entry (file "~/Dropbox/org/readwatch.txt")
+	  "* %i%?")
+	 ))
+
+(defun org-journal-find-location ()
+  ;; Open today's journal, but specify a non-nil prefix argument in order to
+  ;; inhibit inserting the heading; org-capture will insert the heading.
+  (newline)
+  (org-journal-new-entry t)
+
+  ;; Position point on the journal's top-level heading so that org-capture
+  ;; will add the new entry as a child entry.
+  (goto-char (point-max)))
+
+
+(use-package org-journal
+  :ensure t
+  :defer t
+  :custom
+  (org-journal-dir "~/org/journal/")
+  )
+
 
 (use-package all-the-icons)
 (use-package anzu
@@ -250,8 +292,8 @@
   (setq frog-jump-buffer-include-current-buffer nil)
   (setq frog-jump-buffer-max-buffers 120)
 
-  :chords (("bn" . frog-jump-buffer-other-window)
-	   ("bb" . frog-jump-buffer)))
+  :chords (("zn" . frog-jump-buffer-other-window)
+	   ("zb" . frog-jump-buffer)))
 
 (use-package ace-jump-mode
   :ensure t
@@ -304,17 +346,11 @@
   :config
   (smartparens-global-mode t)
   (show-smartparens-global-mode t))
-  ;; :bind
-  ;; (:map smartparens-mode-map
-  ;; 	("M-<right>" . sp-forward-slurp-sexp) ; slurp move parenthesis
-  ;; 	("M-<left>" . sp-backward-slurp-sexp)
-  ;; 	("s-<right>" . sp-forward-barf-sexp) ; barf move word
-  ;; 	("s-<left>" . sp-backward-barf-sexp)))
 
-(define-key smartparens-mode-map (kbd "s-<right>") 'sp-forward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "s-<left>") 'sp-backward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-s-<right>") 'sp-forward-barf-sexp)
-(define-key smartparens-mode-map (kbd "C-s-<left>") 'sp-backward-barf-sexp)
+(define-key smartparens-mode-map (kbd "s-]") 'sp-forward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "s-[") 'sp-backward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "s-}") 'sp-forward-barf-sexp)
+(define-key smartparens-mode-map (kbd "s-{") 'sp-backward-barf-sexp)
 
 (use-package ido-grid-mode
   :ensure t)
@@ -382,7 +418,6 @@
   (flyspell-prog-mode)
   (add-hook 'before-save-hook 'whitespace-cleanup)
   (add-hook 'before-save-hook 'gofmt-before-save))
-;; flycheck mode is enabled by default and all customisation I tried get ignored :(
 
 (setenv "GOPATH" "/Users/androsa/code/go")
 (add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))
@@ -395,12 +430,16 @@
  '(column-number-mode t)
  '(custom-safe-themes
    (quote
-    ("2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" default)))
+    ("1d50bd38eed63d8de5fcfce37c4bb2f660a02d3dff9cbfd807a309db671ff1af" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" default)))
  '(gnutls-algorithm-priority "normal:-vers-tls1.3")
  '(markdown-make-gfm-checkboxes-buttons nil)
+ '(org-journal-date-format "%A, %d %B %Y" nil nil "Customized with use-package org-journal")
+ '(org-journal-dir "~/org/journal/" nil nil "Customized with use-package org-journal")
+ '(org-journal-file-format "%Y.txt")
+ '(org-journal-file-type (quote yearly))
  '(package-selected-packages
    (quote
-    (zop-to-char elpy doom-themes kaolin-themes treemacs-icons-dired treemacs-projectile treemacs org-superstar paradox spaceline-all-the-icons anzu spaceline all-the-icons-gnus yaml-mode load-theme-buffer-local color-theme-buffer-local magit flymake exec-path-from-shell let-alist use-package-chords key-chord frog-jump-buffer ace-jump ace-jump-mode expand-region smex ido-grid-mode ido-vertical-mode which-key ag projectile godoctor smartparens spacemacs-theme solarized-theme solaire-mode lsp-ui flyspell-correct company-quickhelp company go-scratch go-dlv go-eldoc go-playground go-guru flycheck go-mode)))
+    (org-journal zop-to-char elpy doom-themes kaolin-themes treemacs-icons-dired treemacs-projectile treemacs org-superstar paradox spaceline-all-the-icons anzu spaceline all-the-icons-gnus yaml-mode load-theme-buffer-local color-theme-buffer-local magit flymake exec-path-from-shell let-alist use-package-chords key-chord frog-jump-buffer ace-jump ace-jump-mode expand-region smex ido-grid-mode ido-vertical-mode which-key ag projectile godoctor smartparens spacemacs-theme solarized-theme solaire-mode lsp-ui flyspell-correct company-quickhelp company go-scratch go-dlv go-eldoc go-playground go-guru flycheck go-mode)))
  '(paradox-github-token t)
  '(recentf-mode t)
  '(tool-bar-mode nil)
@@ -411,4 +450,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(linum ((t (:background "#002b36" :foreground "#586e75" :underline nil :weight thin :height 100))))
- '(org-checkbox ((t (:background "#002b36" :foreground "#839496" :box nil)))))
+ '(org-checkbox ((t (:background "#002b36" :foreground "#839496" :box nil))))
+ '(org-level-1 ((t (:inherit variable-pitch :foreground "seagreen" :height 1.3)))))
