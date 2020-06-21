@@ -14,9 +14,12 @@
   (exec-path-from-shell-initialize)
   (exec-path-from-shell-copy-env "GOPATH"))
 
+(require 'cl)
 (server-start)
 ;(setq debug-on-error t) ;; will enable debug frame on errors
 
+;; confirm before leaving, making a lot of confusion witn C-c x for org-mode so safer to ask before leaving
+(setq confirm-kill-emacs (quote y-or-n-p))
 ;; disable startup screen
 (setq inhibit-startup-message t)
 ;; disable auto-save
@@ -33,7 +36,8 @@
 (delete-selection-mode 1)
 
 ;; Look and Feel
-(load-theme 'solarized-dark t)
+;;(load-theme 'solarized-dark t)
+(load-theme 'doom-solarized-dark t)
 ;(load-theme 'solarized-dark-high-contrast t)
 ;;(load-theme 'spacemacs-dark t)
 (set-face-attribute 'default nil :height 110)
@@ -42,6 +46,16 @@
 ;spaceline with some fancy look & feel
 (require 'spaceline-config)
 (spaceline-emacs-theme)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ivy-posframe ((t (:foreground "gray82"))))
+ '(linum ((t (:background "#002b36" :foreground "#586e75" :underline nil :weight thin :height 100))))
+ '(org-checkbox ((t (:background "#002b36" :foreground "#839496" :box nil))))
+ '(org-level-1 ((t (:inherit variable-pitch :foreground "purple" :height 1.3))))
+ '(region ((t (:background "dark cyan" :foreground "Yellow")))))
 
 ;; show column number along with line number in the status bar
 (setq column-number-mode t)
@@ -55,11 +69,12 @@
 (global-set-key (kbd "M-,") 'pop-tag-mark)
 (global-set-key [f8] 'treemacs)
 (global-set-key [f6] 'show-file-name)
-(global-set-key [remap zap-to-char] 'zop-to-char) ; zop-to-char is way better as it highlights the selection and gives more option
+(global-set-key [remap zap-to-char] 'zop-up-to-char) ; zop-to-char is way better as it highlights the selection and gives more option
 ;; org-mode
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
-(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c c") 'counsel-org-capture)
+
 
 ;;windows move
 (global-set-key (kbd "M-s-<right>") 'windmove-right)
@@ -74,7 +89,6 @@
 (global-set-key [(meta f5)] 'highlight-symbol-query-replace)
 
 ;awesome-tab
-; (global-set-key (kbd "s-t") 'awesome-tab-ace-jump) ; you use on linux with i3wm where the s- numbers binding doesn't work
 (global-set-key (kbd "s-1") 'awesome-tab-select-visible-tab)
 (global-set-key (kbd "s-2") 'awesome-tab-select-visible-tab)
 (global-set-key (kbd "s-3") 'awesome-tab-select-visible-tab)
@@ -155,21 +169,43 @@
   :ensure t
   :config (treemacs-icons-dired-mode))
 
+
+
+
 (use-package org
   :chords
    (("df" . org-toggle-time-stamp-overlays))
 
   :config
   (setq org-startup-indented t)
+  (setq org-agenda-start-on-weekday 1) ; start the week on monday
   (setq org-catch-invisible-edits 'error)
   (setq org-hide-emphasis-markers t)
   (setq org-M-RET-may-split-line (quote ((default)))) ;; M-RET in the middle of a line doesn't break the line
   (setq org-log-done 'time) ; set this per file as well
+  (setq org-log-reschedule (quote note)) ; when a task is rescheduled add a note
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
   (setq org-enforce-todo-dependencies t)
-  (setq org-refile-targets (quote (("~/Dropbox/org/readwatch.txt" :maxlevel . 1))))
-  (setq org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\.txt$"))
+;  (setq org-image-actual-width (quote (0)))
+;;					;   (setq org-image-actual-width '(300)) require imagemagick support
+  (setq org-cycle-separator-lines 0)
+  (setq org-use-speed-commands t)
+  (setq org-speed-commands-user (quote (("-" . widen) ("+" . org-narrow-to-subtree) ("j" . counsel-org-goto))))
+  (setq org-outline-path-complete-in-steps nil)
+  (setq org-refile-use-outline-path 'file)
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
+  (setq org-refile-targets (quote (("~/Dropbox/org/readwatch.txt" :maxlevel . 1)
+				   (buffer-file-name :maxlevel . 9)
+				   (org-agenda-files :maxlevel . 9)
+;				   ("~/Dropbox/org/workbook.txt" :maxlevel . 9)
+				   )))
+  ;;(setq org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\.txt$"))
+  (setq all-files (directory-files "~/Dropbox/org/" t "\.txt$"))
+  (setq exclude-from-agenda (list "/Users/androsa/Dropbox/org/homeschooling.txt" )) ;; add to the list file you want to esclude
+  (setq org-agenda-file (set-difference all-files exclude-from-agenda :test 'equal))
+
   (setq org-time-stamp-custom-formats (quote ("<%d/%m/%y %a>" . "<%d/%m/%y %a %H:%M>")))
+
   (setq org-babel-load-languages
     (quote
     ((lisp . t)
@@ -180,11 +216,11 @@
      (makefile . t))))
   (setq org-todo-keywords
 	'(
-	  (sequence "TODO(t)" "INPROGRESS(i)" "MEETING(m)" "PAUSED(p)" "BLOCKED(b)" "INREVIEW(v)"  "|" "DONE(d)" )
-	  (sequence "TOREAD(r)" "TOWATCH(w)" "|" "DONE(d)")
+	  (sequence "TODO(t)" "INPROGRESS(i)" "MEETING(m)" "PAUSED(p@)" "BLOCKED(b@)" "INREVIEW(v)"  "|" "DONE(d)" )
+	  (sequence "TODO(t)" "TOREAD(r)" "TOWATCH(w)" "|" "DONE(d)")
 	  ))
   (setq org-todo-keyword-faces
-   '(("MEETING" . "yellow") ("INPROGRESS" . "Salmon") ("TOREAD" . "MediumPurple") ("TOWATCH" . "orchid2") ("INREVIEW" . "limeGreen") ("PAUSED" . "magenta") ("BLOCKED" . "firebrick") | ("DONE" . "MistyRose4")))
+   '(("TODO" . "DarkCyan") ("MEETING" . "yellow") ("INPROGRESS" . "Salmon") ("TOREAD" . "MediumPurple") ("TOWATCH" . "orchid2") ("INREVIEW" . "limeGreen") ("PAUSED" . "magenta") ("BLOCKED" . "firebrick") | ("DONE" . "MistyRose4")))
    (add-hook 'org-mode-hook #'my-org-mode-hook)
    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
    (add-hook 'before-save-hook 'whitespace-cleanup))
@@ -223,17 +259,20 @@
 
 ;;org-capture template
 (setq org-capture-templates
-       '(
-         ("t" "Task in progress" entry (file+olp+datetree "~/Dropbox/org/workbook.txt")
-	  "%i\n:SCHEDULED:%^t%?")
-	 ("p" "Pizza" entry (file+headline "~/Dropbox/cooking/pizza.txt" "Tenativo numero: <NN> ")
+      '(
+	("t" "New Task in the workbook" entry (file+olp+datetree "~/Dropbox/org/workbook.txt")
+	 "* %^{Title}\n%i%?")
+	 ("n" "Enter a TODO in the todo general list" entry (file "~/Dropbox/org/todo.txt")
+	  "* TODO %?")
+	 ("p" "Pizza" entry (file+headline "~/Dropbox/org/cooking/pizza.txt" "Tenativo numero: <NN> ")
 	  "* Ingredienti \n%t\n*Numero panielli:* %^{Numero panielli}\n*Peso panielli in gr.*: %^{Peso panielli in gr.}\n*Idratazione (%)*: %^{Idratazione %}%\n*Ore lievitazione totali*: %^{Ore lievitazioni totali}\n*Ore lievitazione in frigor (sulle totali)*: %^{Ore lievitazioni in frigor sulle totali}\n*Temperatura ambiente*: %^{Temperatura ambiente}\n*Farina (gr.)*: %^{Farina gr.} gr.\n*Sale (gr.)*: %^{Sale gr.} gr.\n*Acqua (gr.):* %^{Acqua gr.} gr.\n*Lievito*: %^{Lievito in grammi} gr.\n*Autolisi*: %^{|SI|NO|}\nLavorazione:\n%?"
 	  )
-	 ("j" "Journal entry" plain
- (function org-journal-find-location)
- "** %(format-time-string org-journal-time-format)%^{Title}\n%i%?")
+	 ("j" "Journal meeting entry" plain (function org-journal-find-location)
+	  "** %(format-time-string org-journal-time-format)%^{MeetingTitle}\n%i%?")
 	 ("l" "Read and watch list" entry (file "~/Dropbox/org/readwatch.txt")
-	  "* %i%?")
+	  "* TODO %i%?")
+	 ("b" "Enter Book entry" entry (file "~/Dropbox/books.txt")
+	  "* %^{TITOLO}\n:PROPERTIES:\n:GENERE: %^{genere}\n:PAGINE: %^{pagine}\n:LINGUA: %^{|ITA|ENG|}\n:INIZIATO: %<%d-%m-%Y>\n:FINITO: %<%d-%m-%Y>\n:FORMATO: %^{|Cartaceo|kindle|pdf|audio|altro|}\n:END:\nAutore: %^{Autore}\nConsigliato da: %^{consigliato da}\nValutazione (1..5): %^{Valutazione|1|2|3|4|5|}\nNote: %^{Note}\n** Commento:\n%?")
 	 ))
 
 (defun org-journal-find-location ()
@@ -250,16 +289,64 @@
 (use-package org-journal
   :ensure t
   :defer t
+  :config
+  (setq org-journal-enable-agenda-integration t)
   :custom
   (org-journal-dir "~/org/journal/")
   )
 
 
-(use-package all-the-icons)
-(use-package anzu
+;; Drag-and-drop images from web or from capture
+(use-package org-download
+  :ensure t
+  :defer t
+  :after org
+  :config
+  (org-download-enable)
+  (setq org-download-backend "curl \"%s\" -o \"%s\"")
+  (setq org-download-screenshot-method "screencapture -i %s")
+  (setq org-download-image-dir "~/Dropbox/images"))
+;; too much I don't like icons in the mini-buffer
+;; (use-package all-the-icons-ivy
+;;   :ensure t
+;;   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+
+;; IVY configuration
+(use-package ivy
   :ensure t
   :config
-  (global-anzu-mode 1))
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "<f7>") 'ivy-resume)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+
+
+(use-package ivy-posframe
+  :config
+  ;;(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+ (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-center)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-bottom-left)))
+;;  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
+;;  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center)))
+  (ivy-posframe-mode 1))
+
+(use-package all-the-icons)
 
 (use-package flyspell
   :ensure t
@@ -284,8 +371,6 @@
   (setq awesome-tab-dark-selected-foreground-color "orange1"))
 ;  (setq awesome-tab-selected-face ((t (:background "#002b36" :foreground "orange1")))))
 
-
-
 (use-package frog-jump-buffer
   :ensure t
   :config
@@ -294,16 +379,10 @@
 
   :chords (("zn" . frog-jump-buffer-other-window)
 	   ("zb" . frog-jump-buffer)))
-
-(use-package ace-jump-mode
+(use-package avy
   :ensure t
-  :config
-  (ace-jump-mode-enable-mark-sync) ; doesn't seem to work
-; if you want to highlight all word use this  (setq ace-jump-word-mode-use-query-char nil)
-  :bind
-  ("C-." . 'ace-jump-mode)
-  ("C-:" . 'ace-jump-mode-pop-mark))
-; that creates an autoload for ace-jump-mode command and defers loading until you use it
+  :chords (("jj" . avy-goto-word-1)
+	   ("jl" . avy-goto-char-timer)))
 
 (use-package highlight-symbol
   :ensure t
@@ -337,6 +416,7 @@
   :ensure t
   :config
   (projectile-mode t)
+  (setq projectile-completion-system 'ivy)
   :bind
   (:map projectile-mode-map
 	("C-c p" . projectile-command-map)))
@@ -351,18 +431,6 @@
 (define-key smartparens-mode-map (kbd "s-[") 'sp-backward-slurp-sexp)
 (define-key smartparens-mode-map (kbd "s-}") 'sp-forward-barf-sexp)
 (define-key smartparens-mode-map (kbd "s-{") 'sp-backward-barf-sexp)
-
-(use-package ido-grid-mode
-  :ensure t)
-
-(use-package ido ;there is an alternative called flx-ido
-  :ensure t
-  :config
-  (ido-mode 1)
-  (ido-grid-mode 1) ; you can use ido-vertical-mode but in the grid-mode you can fit more data
-  (setq ido-everywhere 1
-	ido-enable-flex-matching t
-	ido-grid-mode-padding " || "))
 
 (use-package lsp-mode
    :ensure t
@@ -386,6 +454,11 @@
   (setq python-shell-interpreter "ipython"
       python-shell-interpreter-args "-i --simple-prompt"))
 
+(use-package popwin
+  :config
+  (popwin-mode 1))
+;; popwin
+(global-set-key (kbd "C-z") popwin:keymap)
 (use-package go-mode
   :ensure t
   :init
@@ -420,7 +493,25 @@
   (add-hook 'before-save-hook 'gofmt-before-save))
 
 (setenv "GOPATH" "/Users/androsa/code/go")
+;; this treats txt file as org files
 (add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))
+
+(use-package terraform-mode
+  :ensure t
+  )
+
+(require 'company-terraform)
+(company-terraform-init)
+
+
+(setq org-emphasis-alist
+  '(("*" (bold :foreground "Orange" ))
+    ("/" italic)
+    ("_"  (:background "maroon" :foreground "white"))
+    ("=" org-verbatim verbatim)
+    ("~" org-code verbatim)
+  ;  ("~" (:background "deep sky blue" :foreground "MidnightBlue"))
+    ("+" (:strike-through t))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -428,27 +519,68 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
+ '(compilation-message-face (quote default))
+ '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-normal-cursor-color "#839496")
+ '(cua-overwrite-cursor-color "#b58900")
+ '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
    (quote
-    ("1d50bd38eed63d8de5fcfce37c4bb2f660a02d3dff9cbfd807a309db671ff1af" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" default)))
+    ("9b01a258b57067426cc3c8155330b0381ae0d8dd41d5345b5eddac69f40d409b" "a70b47c87e9b0940f6fece46656200acbfbc55e129f03178de8f50934ac89f58" "d71aabbbd692b54b6263bfe016607f93553ea214bc1435d17de98894a5c3a086" "e964832f274625fa45810c688bdbe18caa75a5e1c36b0ca5ab88924756e5667f" "76bfa9318742342233d8b0b42e824130b3a50dcc732866ff8e47366aed69de11" "bc836bf29eab22d7e5b4c142d201bcce351806b7c1f94955ccafab8ce5b20208" "285efd6352377e0e3b68c71ab12c43d2b72072f64d436584f9159a58c4ff545a" "229c5cf9c9bd4012be621d271320036c69a14758f70e60385e87880b46d60780" "51ec7bfa54adf5fff5d466248ea6431097f5a18224788d0bd7eb1257a4f7b773" "830877f4aab227556548dc0a28bf395d0abe0e3a0ab95455731c9ea5ab5fe4e1" "1526aeed166165811eefd9a6f9176061ec3d121ba39500af2048073bea80911e" "1d50bd38eed63d8de5fcfce37c4bb2f660a02d3dff9cbfd807a309db671ff1af" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" default)))
  '(gnutls-algorithm-priority "normal:-vers-tls1.3")
+ '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
+ '(highlight-symbol-colors
+   (quote
+    ("#3b6b40f432d6" "#07b9463c4d36" "#47a3341e358a" "#1d873c3f56d5" "#2d86441c3361" "#43b7362d3199" "#061d417f59d7")))
+ '(highlight-symbol-foreground-color "#93a1a1")
+ '(highlight-tail-colors
+   (quote
+    (("#073642" . 0)
+     ("#5b7300" . 20)
+     ("#007d76" . 30)
+     ("#0061a8" . 50)
+     ("#866300" . 60)
+     ("#992700" . 70)
+     ("#a00559" . 85)
+     ("#073642" . 100))))
+ '(hl-bg-colors
+   (quote
+    ("#866300" "#992700" "#a7020a" "#a00559" "#243e9b" "#0061a8" "#007d76" "#5b7300")))
+ '(hl-fg-colors
+   (quote
+    ("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36")))
+ '(hl-paren-colors (quote ("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900")))
+ '(lsp-ui-doc-border "#93a1a1")
  '(markdown-make-gfm-checkboxes-buttons nil)
+ '(nrepl-message-colors
+   (quote
+    ("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4")))
+ '(org-agenda-files
+   (quote
+    ("/Users/androsa/Dropbox/org/beorg.txt" "/Users/androsa/Dropbox/org/billbook.txt" "/Users/androsa/Dropbox/org/emacstodo.txt" "/Users/androsa/Dropbox/org/readwatch.txt" "/Users/androsa/Dropbox/org/todo.txt" "/Users/androsa/Dropbox/org/workbook.txt")))
+ '(org-image-actual-width (quote (0)))
  '(org-journal-date-format "%A, %d %B %Y" nil nil "Customized with use-package org-journal")
- '(org-journal-dir "~/org/journal/" nil nil "Customized with use-package org-journal")
- '(org-journal-file-format "%Y.txt")
+ '(org-journal-dir "~/Dropbox/journal/" nil nil "Customized with use-package org-journal")
+ '(org-journal-file-format "%Ymeeting.txt")
  '(org-journal-file-type (quote yearly))
+ '(org-use-speed-commands t)
  '(package-selected-packages
    (quote
-    (org-journal zop-to-char elpy doom-themes kaolin-themes treemacs-icons-dired treemacs-projectile treemacs org-superstar paradox spaceline-all-the-icons anzu spaceline all-the-icons-gnus yaml-mode load-theme-buffer-local color-theme-buffer-local magit flymake exec-path-from-shell let-alist use-package-chords key-chord frog-jump-buffer ace-jump ace-jump-mode expand-region smex ido-grid-mode ido-vertical-mode which-key ag projectile godoctor smartparens spacemacs-theme solarized-theme solaire-mode lsp-ui flyspell-correct company-quickhelp company go-scratch go-dlv go-eldoc go-playground go-guru flycheck go-mode)))
+    (ivy-posframe avy org-roam org-sidebar company-terraform terraform-doc terraform-mode org-download popwin all-the-icons-ivy counsel ivy org-journal zop-to-char elpy doom-themes kaolin-themes treemacs-icons-dired treemacs-projectile treemacs org-superstar paradox spaceline-all-the-icons anzu spaceline all-the-icons-gnus yaml-mode load-theme-buffer-local color-theme-buffer-local magit flymake exec-path-from-shell let-alist use-package-chords key-chord frog-jump-buffer ace-jump ace-jump-mode expand-region smex ido-grid-mode ido-vertical-mode which-key ag projectile godoctor smartparens spacemacs-theme solarized-theme solaire-mode lsp-ui flyspell-correct company-quickhelp company go-scratch go-dlv go-eldoc go-playground go-guru flycheck go-mode)))
  '(paradox-github-token t)
+ '(pos-tip-background-color "#073642")
+ '(pos-tip-foreground-color "#93a1a1")
  '(recentf-mode t)
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
+ '(term-default-bg-color "#002b36")
+ '(term-default-fg-color "#839496")
  '(tool-bar-mode nil)
- '(treemacs-fringe-indicator-mode t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(linum ((t (:background "#002b36" :foreground "#586e75" :underline nil :weight thin :height 100))))
- '(org-checkbox ((t (:background "#002b36" :foreground "#839496" :box nil))))
- '(org-level-1 ((t (:inherit variable-pitch :foreground "seagreen" :height 1.3)))))
+ '(treemacs-fringe-indicator-mode t)
+ '(vc-annotate-background-mode nil)
+ '(weechat-color-list
+   (quote
+    (unspecified "#002b36" "#073642" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#839496" "#657b83")))
+ '(xterm-color-names
+   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#eee8d5"])
+ '(xterm-color-names-bright
+   ["#002b36" "#cb4b16" "#586e75" "#657b83" "#839496" "#6c71c4" "#93a1a1" "#fdf6e3"]))
