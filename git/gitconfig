@@ -1,0 +1,17 @@
+[alias]
+        alias = config --get-regexp ^alias\\.
+        co = checkout
+        pr = pull --rebase
+        brv = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
+        done = !git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)
+        sw = switch
+[pager]
+    branch = false
+    stash = false
+[rerere]
+    enabled = true
+[safe]
+    directory = /tmp
+[push]
+        default = simple
+        autoSetupRemote = true
